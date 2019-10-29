@@ -1,0 +1,34 @@
+{
+  "name": "sketch-plugin-boilerplate",
+  "description": "",
+  "version": "0.1.0",
+  "engines": {
+    "sketch": ">=49.0"
+  },
+  "skpm": {
+    "name": "sketch-plugin-boilerplate",
+    "manifest": "src/manifest.json",
+    "main": "sketch-plugin-boilerplate.sketchplugin",
+    "assets": [
+      "assets/**/*"
+    ],
+    "sketch-assets-file": "sketch-assets/icons.sketch"
+  },
+  "scripts": {
+    "build": "skpm-build",
+    "watch": "skpm-build --watch",
+    "start": "skpm-build --watch --run",
+    "postinstall": "npm run build && skpm-link"
+  },
+  "devDependencies": {
+    "@skpm/builder": "^0.7.0",
+    "eslint": "^6.2.2",
+    "eslint-config-o2team": "^0.1.6",
+    "eslint-config-sketch": "^0.2.4"
+  },
+  "dependencies": {
+    "mocha-js-delegate": "^0.2.0",
+    "sketch-module-web-view": "^3.1.4"
+  },
+  "author": "gaolu11 <768065158@qq.com>"
+}
