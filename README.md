@@ -1,4 +1,5 @@
 # sketch-plugin-boilerplate
+`sketch-plugin-boilerplate` - A template to create sketch plugins displaying side panel.
 
 ## Installation
 
