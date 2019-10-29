@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/BohemianCoding/SketchAPI/develop/docs/sketch-plugin-manifest-schema.json",
+  "icon": "icon.png",
+  "commands": [
+    {
+      "name" : "Action Listener",
+      "noshortcut": "true",
+      "identifier": "sketch-plugin-boilerplate.action",
+      "script": "action.js",
+      "handlers": {
+        "actions": {
+          "OpenDocument": "onOpenDocument",
+          "CloseDocument": "onCloseDocument"
+        }
+      }
+    },
+    {
+      "name": "toggleSidePanel",
+      "identifier": "sketch-plugin-boilerplate.my-command-identifier",
+      "script": "./sidePanel.js",
+      "shortcut": "ctrl command k",
+      "handlers": {
+        "run": "onToggleSidePanel",
+        "actions": {
+          "OpenDocument": "onOpenDocument",
+          "CloseDocument": "onCloseDocument",
+          "Shutdown": "onShutdown"
+        }
+      }
+    }
+  ],
+  "menu": {
+    "isRoot": false,
+    "title": "sketch-plugin-boilerplate",
+    "items": [
+      "sketch-plugin-boilerplate.my-command-identifier"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+node_modules/**
+sketch-plugin-boilerplate.sketchplugin/**
+
+# 忽略自定义的 sketch-module-web-view
+webapp/**
