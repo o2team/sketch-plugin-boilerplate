@@ -1,5 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/BohemianCoding/SketchAPI/develop/docs/sketch-plugin-manifest-schema.json",
+  "identifier": "sketch-plugin-boilerplate",
+  "homepage": "https://github.com/o2team/sketch-plugin-boilerplate",
   "icon": "icon.png",
   "commands": [
     {
@@ -16,7 +18,7 @@
     },
     {
       "name": "toggleSidePanel",
-      "identifier": "sketch-plugin-boilerplate.my-command-identifier",
+      "identifier": "sketch-plugin-boilerplate.toggle-side-panel",
       "script": "__sidePanel.js",
       "shortcut": "ctrl command k",
       "handlers": {
@@ -33,13 +35,12 @@
     "isRoot": false,
     "title": "sketch-plugin-boilerplate",
     "items": [
-      "sketch-plugin-boilerplate.my-command-identifier"
+      "sketch-plugin-boilerplate.toggle-side-panel"
     ]
   },
   "version": "0.1.0",
   "description": "",
   "name": "sketch-plugin-boilerplate",
-  "identifier": "sketch-plugin-boilerplate",
   "disableCocoaScriptPreprocessor": true,
   "appcast": "https://raw.githubusercontent.com//master/.appcast.xml",
   "author": "gaolu11",

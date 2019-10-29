@@ -211,20 +211,18 @@ module.exports = function MochaDelegate(definition, superclass) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onOpenDocument", function() { return onOpenDocument; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onCloseDocument", function() { return onCloseDocument; });
-/* harmony import */ var _session__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./session */ "./src/session.js");
-/* harmony import */ var _common_config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./common/config */ "./src/common/config.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
-
+/* harmony import */ var _common_config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common/config */ "./src/common/config.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
 
 
 var onOpenDocument = function onOpenDocument(context) {
   console.error('✅✅✅ action onOpenDocument');
-  var isShow = Object(_utils__WEBPACK_IMPORTED_MODULE_2__["getSettingForKey"])(_common_config__WEBPACK_IMPORTED_MODULE_1__["SidePanelIdentifier"]);
+  var isShow = Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getSettingForKey"])(_common_config__WEBPACK_IMPORTED_MODULE_0__["SidePanelIdentifier"]);
   console.error('✅✅✅ action isShow', isShow);
 
   if (isShow) {
     setTimeout(function () {
-      var toggleSidePanelCommand = context.command.pluginBundle().commands()['sketch-plugin-boilerplate.my-command-identifier'];
+      var toggleSidePanelCommand = context.command.pluginBundle().commands()['sketch-plugin-boilerplate.toggle-side-panel'];
       context.command = toggleSidePanelCommand;
       AppController.sharedInstance().runPluginCommand_fromMenu_context(toggleSidePanelCommand, false, context);
     }, 100);
