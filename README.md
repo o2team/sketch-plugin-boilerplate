@@ -2,6 +2,8 @@
 
 `sketch-plugin-boilerplate` —— 快速创建侧边栏 sketch plugins 开发模版样例。
 
+![sketch-plugin-boilerplate](http://img.pfan123.com/sketch-plugin-boilerplate.png)
+
 ## 安装
 
 ```
