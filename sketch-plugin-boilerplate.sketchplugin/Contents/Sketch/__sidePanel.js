@@ -2495,51 +2495,6 @@ var Menus = [{
 
 /***/ }),
 
-/***/ "./src/session.js":
-/*!************************!*\
-  !*** ./src/session.js ***!
-  \************************/
-/*! exports provided: context, document, version, sketchVersion, pluginFolderPath, resourcesPath, documentObjectID, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "context", function() { return context; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "document", function() { return document; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "version", function() { return version; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sketchVersion", function() { return sketchVersion; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pluginFolderPath", function() { return pluginFolderPath; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resourcesPath", function() { return resourcesPath; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "documentObjectID", function() { return documentObjectID; });
-var context;
-var document;
-var version;
-var sketchVersion;
-var pluginFolderPath;
-var resourcesPath;
-var documentObjectID;
-
-function getPluginFolderPath(context) {
-  // Get absolute folder path of plugin
-  var split = context.scriptPath.split('/');
-  split.splice(-3, 3);
-  return split.join('/');
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (function (ctx) {
-  context = ctx;
-  document = context.document || context.actionContext.document || MSDocument.currentDocument();
-  documentObjectID = document.documentData().objectID() || NSUUID.UUID().UUIDString(); // eslint-disable-next-line no-new-wrappers
-
-  version = new String(context.plugin.version()).toString(); // eslint-disable-next-line no-new-wrappers
-
-  sketchVersion = new String(context.api().version).toString();
-  pluginFolderPath = getPluginFolderPath(context);
-  resourcesPath = "".concat(pluginFolderPath, "/Contents/Resources");
-});
-
-/***/ }),
-
 /***/ "./src/sidePanel.js":
 /*!**************************!*\
   !*** ./src/sidePanel.js ***!
@@ -2553,7 +2508,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onOpenDocument", function() { return onOpenDocument; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onCloseDocument", function() { return onCloseDocument; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onShutdown", function() { return onShutdown; });
-/* harmony import */ var _session__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./session */ "./src/session.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state */ "./src/state.js");
 /* harmony import */ var _common_config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./common/config */ "./src/common/config.js");
 /* harmony import */ var _webview_index__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./webview/index */ "./src/webview/index.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
@@ -2570,7 +2525,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var insertSidePanel = function insertSidePanel(toolbar, identifier) {
   var isInsert = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  var contentView = _session__WEBPACK_IMPORTED_MODULE_0__["context"].document.documentWindow().contentView();
+  var contentView = _state__WEBPACK_IMPORTED_MODULE_0__["context"].document.documentWindow().contentView();
   var stageView = contentView.subviews().objectAtIndex(0);
   var views = stageView.subviews();
   var existId = isInsert || views.find(function (d) {
@@ -2607,7 +2562,7 @@ var insertSidePanel = function insertSidePanel(toolbar, identifier) {
 var onToggleSidePanel = function onToggleSidePanel(context) {
   console.error('✅✅✅ 展示 plugins'); // register context
 
-  Object(_session__WEBPACK_IMPORTED_MODULE_0__["default"])(context);
+  Object(_state__WEBPACK_IMPORTED_MODULE_0__["default"])(context);
   var threadDictionary = NSThread.mainThread().threadDictionary();
 
   if (threadDictionary[_common_config__WEBPACK_IMPORTED_MODULE_1__["SidePanelIdentifier"]]) {
@@ -2735,6 +2690,51 @@ function onShutdown() {
 
 /***/ }),
 
+/***/ "./src/state.js":
+/*!**********************!*\
+  !*** ./src/state.js ***!
+  \**********************/
+/*! exports provided: context, document, version, sketchVersion, pluginFolderPath, resourcesPath, documentObjectID, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "context", function() { return context; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "document", function() { return document; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "version", function() { return version; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sketchVersion", function() { return sketchVersion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pluginFolderPath", function() { return pluginFolderPath; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resourcesPath", function() { return resourcesPath; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "documentObjectID", function() { return documentObjectID; });
+var context;
+var document;
+var version;
+var sketchVersion;
+var pluginFolderPath;
+var resourcesPath;
+var documentObjectID;
+
+function getPluginFolderPath(context) {
+  // Get absolute folder path of plugin
+  var split = context.scriptPath.split('/');
+  split.splice(-3, 3);
+  return split.join('/');
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function (ctx) {
+  context = ctx;
+  document = context.document || context.actionContext.document || MSDocument.currentDocument();
+  documentObjectID = document.documentData().objectID() || NSUUID.UUID().UUIDString(); // eslint-disable-next-line no-new-wrappers
+
+  version = new String(context.plugin.version()).toString(); // eslint-disable-next-line no-new-wrappers
+
+  sketchVersion = new String(context.api().version).toString();
+  pluginFolderPath = getPluginFolderPath(context);
+  resourcesPath = "".concat(pluginFolderPath, "/Contents/Resources");
+});
+
+/***/ }),
+
 /***/ "./src/utils/element.js":
 /*!******************************!*\
   !*** ./src/utils/element.js ***!
@@ -2754,7 +2754,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createView", function() { return createView; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createBox", function() { return createBox; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createTextField", function() { return createTextField; });
-/* harmony import */ var _session__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../session */ "./src/session.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../state */ "./src/state.js");
 
 /**
  * getImageURL 获取 icon 路径
@@ -2764,7 +2764,7 @@ __webpack_require__.r(__webpack_exports__);
 var getImageURL = function getImageURL(name) {
   var isRetinaDisplay = NSScreen.mainScreen().backingScaleFactor() > 1;
   var suffix = isRetinaDisplay ? '@2x' : '';
-  var pluginSketch = _session__WEBPACK_IMPORTED_MODULE_0__["context"].plugin.url();
+  var pluginSketch = _state__WEBPACK_IMPORTED_MODULE_0__["context"].plugin.url();
   var imageURL = pluginSketch.URLByAppendingPathComponent('Contents').URLByAppendingPathComponent('Resources').URLByAppendingPathComponent('icons').URLByAppendingPathComponent("".concat(name + suffix, ".png"));
   return imageURL;
 };
@@ -3193,7 +3193,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDocumentName", function() { return getDocumentName; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dumpLayer", function() { return dumpLayer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dumpSymbol", function() { return dumpSymbol; });
-/* harmony import */ var _session__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../session */ "./src/session.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../state */ "./src/state.js");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_1__);
 
@@ -3223,17 +3223,17 @@ var getSketchSelected = function getSketchSelected() {
  */
 
 var getSelected = function getSelected() {
-  var document = _session__WEBPACK_IMPORTED_MODULE_0__["context"].document; // 获取 sketch 当前 document
+  var document = _state__WEBPACK_IMPORTED_MODULE_0__["context"].document; // 获取 sketch 当前 document
 
-  var plugin = _session__WEBPACK_IMPORTED_MODULE_0__["context"].plugin;
-  var command = _session__WEBPACK_IMPORTED_MODULE_0__["context"].command;
+  var plugin = _state__WEBPACK_IMPORTED_MODULE_0__["context"].plugin;
+  var command = _state__WEBPACK_IMPORTED_MODULE_0__["context"].command;
   var page = document.currentPage(); // 当前被选择的 page
 
   var artboards = page.artboards(); // 所有的画板
 
   var selectedArtboard = page.currentArtboard(); // 当前被选择的画板
 
-  var selection = _session__WEBPACK_IMPORTED_MODULE_0__["context"].selection; // 当前选择图层
+  var selection = _state__WEBPACK_IMPORTED_MODULE_0__["context"].selection; // 当前选择图层
 
   return {
     document: document,
@@ -3258,14 +3258,14 @@ var getScriptExecPath = function getScriptExecPath(context) {
  */
 
 var getDocumentID = function getDocumentID() {
-  return _session__WEBPACK_IMPORTED_MODULE_0__["context"].document.documentData().objectID();
+  return _state__WEBPACK_IMPORTED_MODULE_0__["context"].document.documentData().objectID();
 };
 /**
  * getDocumentPath 获取所选择 document 路径
  */
 
 var getDocumentPath = function getDocumentPath() {
-  var Document = _session__WEBPACK_IMPORTED_MODULE_0__["context"].document;
+  var Document = _state__WEBPACK_IMPORTED_MODULE_0__["context"].document;
   return Document.fileURL() ? Document.fileURL().path() : nil;
 };
 /**
@@ -3273,7 +3273,7 @@ var getDocumentPath = function getDocumentPath() {
  */
 
 var getDocumentName = function getDocumentName() {
-  return getDocumentPath(_session__WEBPACK_IMPORTED_MODULE_0__["context"]) ? getDocumentPath(_session__WEBPACK_IMPORTED_MODULE_0__["context"]).lastPathComponent() : nil;
+  return getDocumentPath(_state__WEBPACK_IMPORTED_MODULE_0__["context"]) ? getDocumentPath(_state__WEBPACK_IMPORTED_MODULE_0__["context"]).lastPathComponent() : nil;
 };
 /**
  * dumpLayer 导出json数据
@@ -3327,7 +3327,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removeObserverWindowResizeNotification", function() { return removeObserverWindowResizeNotification; });
 /* harmony import */ var mocha_js_delegate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mocha-js-delegate */ "./node_modules/mocha-js-delegate/index.js");
 /* harmony import */ var mocha_js_delegate__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mocha_js_delegate__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _session__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../session */ "./src/session.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../state */ "./src/state.js");
 /* harmony import */ var _common_config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../common/config */ "./src/common/config.js");
 
 
@@ -3440,7 +3440,7 @@ var getSystemVersion = function getSystemVersion() {
  */
 
 var getPluginVersion = function getPluginVersion() {
-  return _session__WEBPACK_IMPORTED_MODULE_1__["context"].plugin.version();
+  return _state__WEBPACK_IMPORTED_MODULE_1__["context"].plugin.version();
 };
 /**
  * reloadPlugins 重载插件
@@ -3548,7 +3548,7 @@ var removeObserverWindowResizeNotification = function removeObserverWindowResize
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BrowserManage", function() { return BrowserManage; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Browser", function() { return Browser; });
-/* harmony import */ var _session__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../session */ "./src/session.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../state */ "./src/state.js");
 /* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sketch-module-web-view */ "./node_modules/sketch-module-web-view/lib/index.js");
 /* harmony import */ var sketch_module_web_view__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sketch_module_web_view__WEBPACK_IMPORTED_MODULE_1__);
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
@@ -3588,12 +3588,12 @@ var BrowserManage = {
 };
 
 var getAbsScreenOfTop = function getAbsScreenOfTop() {
-  var contentView = _session__WEBPACK_IMPORTED_MODULE_0__["document"].documentWindow().contentView();
+  var contentView = _state__WEBPACK_IMPORTED_MODULE_0__["document"].documentWindow().contentView();
   var width = contentView.frame().size.width;
   var height = contentView.frame().size.height;
   var x = contentView.frame().origin.x;
   var y = contentView.frame().origin.y;
-  var rect = _session__WEBPACK_IMPORTED_MODULE_0__["document"].window().convertRectToScreen(NSMakeRect(x, y, width, height));
+  var rect = _state__WEBPACK_IMPORTED_MODULE_0__["document"].window().convertRectToScreen(NSMakeRect(x, y, width, height));
   return rect;
 };
 
@@ -3660,7 +3660,7 @@ function () {
     key: "show",
     value: function show() {
       this.updatePosition();
-      var documentWindow = _session__WEBPACK_IMPORTED_MODULE_0__["context"].document.documentWindow();
+      var documentWindow = _state__WEBPACK_IMPORTED_MODULE_0__["context"].document.documentWindow();
       documentWindow.addChildWindow_ordered(this.browserWindow._panel, true);
       this.browserWindow.show();
     }

@@ -1,4 +1,4 @@
-import Session, { context } from './session'
+import initState, { context } from './state'
 import { Menus, IdentifierPrefix, SidePanelIdentifier } from './common/config'
 import { Browser, BrowserManage } from './webview/index'
 import { createImageView, addButton, createBoxSeparator, observerWindowResizeNotification, removeObserverWindowResizeNotification, setSettingForKey, removeSettingForKey, dumpLayer } from './utils'
@@ -47,7 +47,7 @@ const insertSidePanel = (toolbar, identifier, isInsert = false) => {
 export const onToggleSidePanel = context => {
   console.error('✅✅✅ 展示 plugins')
   // register context
-  Session(context)
+  initState(context)
 
   const threadDictionary = NSThread.mainThread().threadDictionary()
   if (threadDictionary[SidePanelIdentifier]) {

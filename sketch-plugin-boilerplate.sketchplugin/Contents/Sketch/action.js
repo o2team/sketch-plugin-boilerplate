@@ -333,10 +333,10 @@ var Menus = [{
 
 /***/ }),
 
-/***/ "./src/session.js":
-/*!************************!*\
-  !*** ./src/session.js ***!
-  \************************/
+/***/ "./src/state.js":
+/*!**********************!*\
+  !*** ./src/state.js ***!
+  \**********************/
 /*! exports provided: context, document, version, sketchVersion, pluginFolderPath, resourcesPath, documentObjectID, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -397,7 +397,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createView", function() { return createView; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createBox", function() { return createBox; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createTextField", function() { return createTextField; });
-/* harmony import */ var _session__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../session */ "./src/session.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../state */ "./src/state.js");
 
 /**
  * getImageURL 获取 icon 路径
@@ -407,7 +407,7 @@ __webpack_require__.r(__webpack_exports__);
 var getImageURL = function getImageURL(name) {
   var isRetinaDisplay = NSScreen.mainScreen().backingScaleFactor() > 1;
   var suffix = isRetinaDisplay ? '@2x' : '';
-  var pluginSketch = _session__WEBPACK_IMPORTED_MODULE_0__["context"].plugin.url();
+  var pluginSketch = _state__WEBPACK_IMPORTED_MODULE_0__["context"].plugin.url();
   var imageURL = pluginSketch.URLByAppendingPathComponent('Contents').URLByAppendingPathComponent('Resources').URLByAppendingPathComponent('icons').URLByAppendingPathComponent("".concat(name + suffix, ".png"));
   return imageURL;
 };
@@ -836,7 +836,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDocumentName", function() { return getDocumentName; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dumpLayer", function() { return dumpLayer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dumpSymbol", function() { return dumpSymbol; });
-/* harmony import */ var _session__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../session */ "./src/session.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../state */ "./src/state.js");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_1__);
 
@@ -866,17 +866,17 @@ var getSketchSelected = function getSketchSelected() {
  */
 
 var getSelected = function getSelected() {
-  var document = _session__WEBPACK_IMPORTED_MODULE_0__["context"].document; // 获取 sketch 当前 document
+  var document = _state__WEBPACK_IMPORTED_MODULE_0__["context"].document; // 获取 sketch 当前 document
 
-  var plugin = _session__WEBPACK_IMPORTED_MODULE_0__["context"].plugin;
-  var command = _session__WEBPACK_IMPORTED_MODULE_0__["context"].command;
+  var plugin = _state__WEBPACK_IMPORTED_MODULE_0__["context"].plugin;
+  var command = _state__WEBPACK_IMPORTED_MODULE_0__["context"].command;
   var page = document.currentPage(); // 当前被选择的 page
 
   var artboards = page.artboards(); // 所有的画板
 
   var selectedArtboard = page.currentArtboard(); // 当前被选择的画板
 
-  var selection = _session__WEBPACK_IMPORTED_MODULE_0__["context"].selection; // 当前选择图层
+  var selection = _state__WEBPACK_IMPORTED_MODULE_0__["context"].selection; // 当前选择图层
 
   return {
     document: document,
@@ -901,14 +901,14 @@ var getScriptExecPath = function getScriptExecPath(context) {
  */
 
 var getDocumentID = function getDocumentID() {
-  return _session__WEBPACK_IMPORTED_MODULE_0__["context"].document.documentData().objectID();
+  return _state__WEBPACK_IMPORTED_MODULE_0__["context"].document.documentData().objectID();
 };
 /**
  * getDocumentPath 获取所选择 document 路径
  */
 
 var getDocumentPath = function getDocumentPath() {
-  var Document = _session__WEBPACK_IMPORTED_MODULE_0__["context"].document;
+  var Document = _state__WEBPACK_IMPORTED_MODULE_0__["context"].document;
   return Document.fileURL() ? Document.fileURL().path() : nil;
 };
 /**
@@ -916,7 +916,7 @@ var getDocumentPath = function getDocumentPath() {
  */
 
 var getDocumentName = function getDocumentName() {
-  return getDocumentPath(_session__WEBPACK_IMPORTED_MODULE_0__["context"]) ? getDocumentPath(_session__WEBPACK_IMPORTED_MODULE_0__["context"]).lastPathComponent() : nil;
+  return getDocumentPath(_state__WEBPACK_IMPORTED_MODULE_0__["context"]) ? getDocumentPath(_state__WEBPACK_IMPORTED_MODULE_0__["context"]).lastPathComponent() : nil;
 };
 /**
  * dumpLayer 导出json数据
@@ -970,7 +970,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removeObserverWindowResizeNotification", function() { return removeObserverWindowResizeNotification; });
 /* harmony import */ var mocha_js_delegate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mocha-js-delegate */ "./node_modules/mocha-js-delegate/index.js");
 /* harmony import */ var mocha_js_delegate__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mocha_js_delegate__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _session__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../session */ "./src/session.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../state */ "./src/state.js");
 /* harmony import */ var _common_config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../common/config */ "./src/common/config.js");
 
 
@@ -1083,7 +1083,7 @@ var getSystemVersion = function getSystemVersion() {
  */
 
 var getPluginVersion = function getPluginVersion() {
-  return _session__WEBPACK_IMPORTED_MODULE_1__["context"].plugin.version();
+  return _state__WEBPACK_IMPORTED_MODULE_1__["context"].plugin.version();
 };
 /**
  * reloadPlugins 重载插件

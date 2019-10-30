@@ -1,4 +1,4 @@
-import { context } from '../session'
+import { context } from '../state'
 import sketch from 'sketch'
 
 

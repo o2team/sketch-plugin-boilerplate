@@ -1,5 +1,5 @@
 import MochaJSDelegate from 'mocha-js-delegate'
-import { context } from '../session'
+import { context } from '../state'
 import { WINDOW_MOVE_INSTANCE, WINDOW_MOVE_SELECTOR } from '../common/config'
 
 

@@ -1,4 +1,4 @@
-import { context } from '../session'
+import { context } from '../state'
 
 /**
  * getImageURL 获取 icon 路径

@@ -1,22 +1,22 @@
-import { context, document } from '../session'
+import { context, document } from '../state'
 import BrowserWindow from 'sketch-module-web-view'
 
-export const BrowserManage =  {
+export const BrowserManage = {
   list: [],
 
   add (browser) {
     this.list.push(browser)
   },
 
-	get (identifier) {
-		return this.list.find(d => d.identifier === identifier)
+  get (identifier) {
+    return this.list.find(d => d.identifier === identifier)
   },
 
-  getCurrent(){
-		return this.list.find(d => d.browserWindow.isVisible())
+  getCurrent () {
+    return this.list.find(d => d.browserWindow.isVisible())
   },
 
-  empty(){
+  empty () {
     this.list = []
   }
 }
@@ -31,7 +31,7 @@ const getAbsScreenOfTop = () => {
   return rect
 }
 
-const getAbsWindowOfView = (button) =>  {
+const getAbsWindowOfView = button => {
   const bounds = button.bounds()
   const width = bounds.size.width
   const height = bounds.size.height
@@ -41,7 +41,7 @@ const getAbsWindowOfView = (button) =>  {
 }
 
 export class Browser {
-  constructor(options) {
+  constructor (options) {
     this.options = Object.assign({
       width: 290,
       height: 550,
@@ -59,16 +59,16 @@ export class Browser {
     this.identifier = options.identifier
 
     BrowserManage.list.forEach(d => {
-      if ( d.identifier != this.identifier ) {
-          if ( d.browserWindow.isVisible() ) {
-              d.hide()
-          }
+      if (d.identifier != this.identifier) {
+        if (d.browserWindow.isVisible()) {
+          d.hide()
+        }
       }
     })
 
     const existBrowser = BrowserManage.get(options.identifier)
-    if(existBrowser){
-      if ( existBrowser.browserWindow.isVisible() ) {
+    if (existBrowser) {
+      if (existBrowser.browserWindow.isVisible()) {
         existBrowser.hide()
       } else {
         existBrowser.show()
@@ -105,13 +105,12 @@ export class Browser {
     const senderRect = getAbsWindowOfView(sender)
     const x = winRect.origin.x + senderRect.origin.x - sender.frame().origin.x - width - 1
 
-    if( inGravityType === 1){
+    if (inGravityType === 1) {
       const y = winRect.origin.y + senderRect.origin.y + 24 - height + 8
       this.browserWindow._panel.setFrame_display(NSMakeRect(x, y, width, height), true)
     } else if (inGravityType === 3) {
       const y = winRect.origin.y
       this.browserWindow._panel.setFrame_display(NSMakeRect(x, y, width, height), true)
     }
-
   }
 }
