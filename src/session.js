@@ -4,6 +4,7 @@ export let version
 export let sketchVersion
 export let pluginFolderPath
 export let resourcesPath
+export let documentObjectID
 
 function getPluginFolderPath (context) {
   // Get absolute folder path of plugin
@@ -14,7 +15,8 @@ function getPluginFolderPath (context) {
 
 export default function (ctx) {
   context = ctx
-  document = context.document || MSDocument.currentDocument()
+  document = context.document || context.actionContext.document || MSDocument.currentDocument()
+  documentObjectID = document.documentData().objectID() || NSUUID.UUID().UUIDString()
   // eslint-disable-next-line no-new-wrappers
   version = new String(context.plugin.version()).toString()
   // eslint-disable-next-line no-new-wrappers

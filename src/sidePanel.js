@@ -1,7 +1,7 @@
 import Session, { context } from './session'
 import { Menus, IdentifierPrefix, SidePanelIdentifier } from './common/config'
 import { Browser, BrowserManage } from './webview/index'
-import { createImageView, addButton, createBoxSeparator, observerWindowResizeNotification, removeObserverWindowResizeNotification, setSettingForKey, removeSettingForKey } from './utils'
+import { createImageView, addButton, createBoxSeparator, observerWindowResizeNotification, removeObserverWindowResizeNotification, setSettingForKey, removeSettingForKey, dumpLayer } from './utils'
 
 /**
  * insertSidePanel 插入侧边栏
@@ -159,7 +159,7 @@ export const onOpenDocument = () => {
 }
 
 export const onCloseDocument = () => {
-  console.error('✅✅✅onCloseDocument111111')
+  console.error('✅✅✅onCloseDocument')
   onShutdown()
 }
 

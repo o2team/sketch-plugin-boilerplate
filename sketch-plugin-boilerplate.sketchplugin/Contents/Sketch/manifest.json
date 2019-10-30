@@ -12,7 +12,8 @@
       "handlers": {
         "actions": {
           "OpenDocument": "onOpenDocument",
-          "CloseDocument": "onCloseDocument"
+          "CloseDocument": "onCloseDocument",
+          "SelectionChanged.finish": "onSelectionChanged"
         }
       }
     },

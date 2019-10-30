@@ -2499,7 +2499,7 @@ var Menus = [{
 /*!************************!*\
   !*** ./src/session.js ***!
   \************************/
-/*! exports provided: context, document, version, sketchVersion, pluginFolderPath, resourcesPath, default */
+/*! exports provided: context, document, version, sketchVersion, pluginFolderPath, resourcesPath, documentObjectID, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2510,12 +2510,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sketchVersion", function() { return sketchVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pluginFolderPath", function() { return pluginFolderPath; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resourcesPath", function() { return resourcesPath; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "documentObjectID", function() { return documentObjectID; });
 var context;
 var document;
 var version;
 var sketchVersion;
 var pluginFolderPath;
 var resourcesPath;
+var documentObjectID;
 
 function getPluginFolderPath(context) {
   // Get absolute folder path of plugin
@@ -2526,7 +2528,8 @@ function getPluginFolderPath(context) {
 
 /* harmony default export */ __webpack_exports__["default"] = (function (ctx) {
   context = ctx;
-  document = context.document || MSDocument.currentDocument(); // eslint-disable-next-line no-new-wrappers
+  document = context.document || context.actionContext.document || MSDocument.currentDocument();
+  documentObjectID = document.documentData().objectID() || NSUUID.UUID().UUIDString(); // eslint-disable-next-line no-new-wrappers
 
   version = new String(context.plugin.version()).toString(); // eslint-disable-next-line no-new-wrappers
 
@@ -2704,7 +2707,7 @@ var onOpenDocument = function onOpenDocument() {
   console.error('✅✅✅onOpenDocument');
 };
 var onCloseDocument = function onCloseDocument() {
-  console.error('✅✅✅onCloseDocument111111');
+  console.error('✅✅✅onCloseDocument');
   onShutdown();
 }; // handler cleanly Long-running script
 
@@ -3085,7 +3088,7 @@ var File = {
 /*!****************************!*\
   !*** ./src/utils/index.js ***!
   \****************************/
-/*! exports provided: getImageURL, createImage, createImageView, createBoxSeparator, addButton, createBounds, createPanel, createView, createBox, createTextField, getSketchSelected, getSelected, getScriptExecPath, getDocumentPath, getDocumentName, dumpLayer, dumpSymbol, getNewUUID, getThreadDictForKey, setThreadDictForKey, removeThreadDictForKey, getSettingForKey, setSettingForKey, removeSettingForKey, showPluginsPane, showLibrariesPane, getSystemVersion, getPluginVersion, reloadPlugins, getFileContentFromModal, getSavePathFromModal, observerWindowResizeNotification, removeObserverWindowResizeNotification, File */
+/*! exports provided: getImageURL, createImage, createImageView, createBoxSeparator, addButton, createBounds, createPanel, createView, createBox, createTextField, getSketchSelected, getSelected, getScriptExecPath, getDocumentID, getDocumentPath, getDocumentName, dumpLayer, dumpSymbol, penUrlInBrowser, getNewUUID, getThreadDictForKey, setThreadDictForKey, removeThreadDictForKey, getSettingForKey, setSettingForKey, removeSettingForKey, showPluginsPane, showLibrariesPane, getSystemVersion, getPluginVersion, reloadPlugins, getFileContentFromModal, getSavePathFromModal, observerWindowResizeNotification, removeObserverWindowResizeNotification, File */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3118,6 +3121,8 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getScriptExecPath", function() { return _selector__WEBPACK_IMPORTED_MODULE_1__["getScriptExecPath"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getDocumentID", function() { return _selector__WEBPACK_IMPORTED_MODULE_1__["getDocumentID"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getDocumentPath", function() { return _selector__WEBPACK_IMPORTED_MODULE_1__["getDocumentPath"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getDocumentName", function() { return _selector__WEBPACK_IMPORTED_MODULE_1__["getDocumentName"]; });
@@ -3127,6 +3132,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "dumpSymbol", function() { return _selector__WEBPACK_IMPORTED_MODULE_1__["dumpSymbol"]; });
 
 /* harmony import */ var _system__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./system */ "./src/utils/system.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "penUrlInBrowser", function() { return _system__WEBPACK_IMPORTED_MODULE_2__["penUrlInBrowser"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getNewUUID", function() { return _system__WEBPACK_IMPORTED_MODULE_2__["getNewUUID"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getThreadDictForKey", function() { return _system__WEBPACK_IMPORTED_MODULE_2__["getThreadDictForKey"]; });
@@ -3173,7 +3180,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************!*\
   !*** ./src/utils/selector.js ***!
   \*******************************/
-/*! exports provided: getSketchSelected, getSelected, getScriptExecPath, getDocumentPath, getDocumentName, dumpLayer, dumpSymbol */
+/*! exports provided: getSketchSelected, getSelected, getScriptExecPath, getDocumentID, getDocumentPath, getDocumentName, dumpLayer, dumpSymbol */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3181,6 +3188,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSketchSelected", function() { return getSketchSelected; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSelected", function() { return getSelected; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getScriptExecPath", function() { return getScriptExecPath; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDocumentID", function() { return getDocumentID; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDocumentPath", function() { return getDocumentPath; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDocumentName", function() { return getDocumentName; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dumpLayer", function() { return dumpLayer; });
@@ -3246,6 +3254,13 @@ var getScriptExecPath = function getScriptExecPath(context) {
   return context.scriptPath;
 };
 /**
+ * document 获取所选择 document objectID
+ */
+
+var getDocumentID = function getDocumentID() {
+  return _session__WEBPACK_IMPORTED_MODULE_0__["context"].document.documentData().objectID();
+};
+/**
  * getDocumentPath 获取所选择 document 路径
  */
 
@@ -3288,11 +3303,12 @@ var dumpSymbol = function dumpSymbol(symbolInstance) {
 /*!*****************************!*\
   !*** ./src/utils/system.js ***!
   \*****************************/
-/*! exports provided: getNewUUID, getThreadDictForKey, setThreadDictForKey, removeThreadDictForKey, getSettingForKey, setSettingForKey, removeSettingForKey, showPluginsPane, showLibrariesPane, getSystemVersion, getPluginVersion, reloadPlugins, getFileContentFromModal, getSavePathFromModal, observerWindowResizeNotification, removeObserverWindowResizeNotification */
+/*! exports provided: penUrlInBrowser, getNewUUID, getThreadDictForKey, setThreadDictForKey, removeThreadDictForKey, getSettingForKey, setSettingForKey, removeSettingForKey, showPluginsPane, showLibrariesPane, getSystemVersion, getPluginVersion, reloadPlugins, getFileContentFromModal, getSavePathFromModal, observerWindowResizeNotification, removeObserverWindowResizeNotification */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "penUrlInBrowser", function() { return penUrlInBrowser; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNewUUID", function() { return getNewUUID; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getThreadDictForKey", function() { return getThreadDictForKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setThreadDictForKey", function() { return setThreadDictForKey; });
@@ -3316,6 +3332,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+/**
+ * openUrlInBrowser 浏览器打开链接
+ * @param {string} url
+ */
+
+var penUrlInBrowser = function penUrlInBrowser(url) {
+  NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url));
+};
 /**
  * getNewUUID 获取唯一 ID
  */
