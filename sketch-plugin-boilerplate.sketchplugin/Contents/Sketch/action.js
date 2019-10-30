@@ -212,15 +212,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onOpenDocument", function() { return onOpenDocument; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onSelectionChanged", function() { return onSelectionChanged; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onCloseDocument", function() { return onCloseDocument; });
-/* harmony import */ var _common_config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common/config */ "./src/common/config.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
 
 
-var onOpenDocument = function onOpenDocument(context) {
-  console.error('✅✅✅ action onOpenDocument');
-};
-var onSelectionChanged = function onSelectionChanged(context) {
-  var isShow = Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getSettingForKey"])(_common_config__WEBPACK_IMPORTED_MODULE_0__["SidePanelIdentifier"]);
+var autoSidePanelCommand = function autoSidePanelCommand(context) {
+  var objectID = (context.document || context.actionContext.document || MSDocument.currentDocument()).documentData().objectID();
+  var IdentifierPrefix = objectID ? "sketch-plugin-boilerplate-".concat(objectID) : 'sketch-plugin-boilerplate';
+  var SidePanelIdentifier = "".concat(IdentifierPrefix, "-side-panel");
+  var isShow = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getSettingForKey"])(SidePanelIdentifier);
 
   if (isShow) {
     var toggleSidePanelCommand = context.command.pluginBundle().commands()['sketch-plugin-boilerplate.toggle-side-panel'];
@@ -228,108 +227,14 @@ var onSelectionChanged = function onSelectionChanged(context) {
     AppController.sharedInstance().runPluginCommand_fromMenu_context(toggleSidePanelCommand, false, context);
   }
 };
+
+var onOpenDocument = function onOpenDocument(context) {
+  setTimeout(autoSidePanelCommand.bind(null, context), 100);
+};
+var onSelectionChanged = function onSelectionChanged() {};
 var onCloseDocument = function onCloseDocument() {
   COScript.currentCOScript().setShouldKeepAround(false);
 };
-
-/***/ }),
-
-/***/ "./src/common/config.js":
-/*!******************************!*\
-  !*** ./src/common/config.js ***!
-  \******************************/
-/*! exports provided: IdentifierPrefix, SidePanelIdentifier, WINDOW_MOVE_INSTANCE, WINDOW_MOVE_SELECTOR, Menus */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "IdentifierPrefix", function() { return IdentifierPrefix; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SidePanelIdentifier", function() { return SidePanelIdentifier; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WINDOW_MOVE_INSTANCE", function() { return WINDOW_MOVE_INSTANCE; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WINDOW_MOVE_SELECTOR", function() { return WINDOW_MOVE_SELECTOR; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Menus", function() { return Menus; });
-var IdentifierPrefix = 'sketch-plugin-boilerplate';
-var SidePanelIdentifier = "".concat(IdentifierPrefix, ".side-panel-identifier");
-var WINDOW_MOVE_INSTANCE = 'WINDOW_MOVE_INSTANCE';
-var WINDOW_MOVE_SELECTOR = 'WINDOW_MOVE_SELECTOR';
-var Menus = [{
-  rect: NSMakeRect(0, 0, 40, 40),
-  size: NSMakeSize(24, 24),
-  icon: 'artboard',
-  activeIcon: 'artboard-active',
-  tooltip: '上传画板',
-  identifier: "".concat(IdentifierPrefix, "-menu.artboard-").concat(NSUUID.UUID().UUIDString()),
-  wkIdentifier: "".concat(IdentifierPrefix, "-webview.artboard-").concat(NSUUID.UUID().UUIDString()),
-  type: 2,
-  inGravityType: 1,
-  url: 'https://aotu.io'
-}, {
-  rect: NSMakeRect(0, 0, 40, 40),
-  size: NSMakeSize(24, 24),
-  icon: 'icon',
-  activeIcon: 'icon-active',
-  tooltip: '图标',
-  identifier: "".concat(IdentifierPrefix, "-menu.icon-").concat(NSUUID.UUID().UUIDString()),
-  wkIdentifier: "".concat(IdentifierPrefix, "-webview.icon-").concat(NSUUID.UUID().UUIDString()),
-  type: 2,
-  inGravityType: 1,
-  url: 'https://docs.pfan123.com/'
-}, {
-  rect: NSMakeRect(0, 0, 40, 40),
-  size: NSMakeSize(24, 24),
-  icon: 'component',
-  activeIcon: 'component-active',
-  tooltip: '组件',
-  identifier: "".concat(IdentifierPrefix, "-menu.component-").concat(NSUUID.UUID().UUIDString()),
-  wkIdentifier: "".concat(IdentifierPrefix, "-webview.component-").concat(NSUUID.UUID().UUIDString()),
-  type: 2,
-  inGravityType: 1,
-  url: 'http://m.baidu.com/'
-}, {
-  rect: NSMakeRect(0, 0, 40, 40),
-  size: NSMakeSize(24, 24),
-  icon: 'palette',
-  activeIcon: 'palette-active',
-  tooltip: '调色板',
-  identifier: "".concat(IdentifierPrefix, "-menu.palette-").concat(NSUUID.UUID().UUIDString()),
-  wkIdentifier: "".concat(IdentifierPrefix, "-webview.palette-").concat(NSUUID.UUID().UUIDString()),
-  type: 2,
-  inGravityType: 1,
-  url: 'http://m.baidu.com/'
-}, {
-  rect: NSMakeRect(0, 0, 40, 40),
-  size: NSMakeSize(24, 24),
-  icon: 'fill',
-  activeIcon: 'fill-active',
-  tooltip: '填充',
-  identifier: "".concat(IdentifierPrefix, "-menu.fill-").concat(NSUUID.UUID().UUIDString()),
-  wkIdentifier: "".concat(IdentifierPrefix, "-webview.fill-").concat(NSUUID.UUID().UUIDString()),
-  type: 2,
-  inGravityType: 1,
-  url: 'http://m.baidu.com/'
-}, {
-  rect: NSMakeRect(0, 0, 40, 40),
-  size: NSMakeSize(24, 24),
-  icon: 'help',
-  activeIcon: 'help-active',
-  tooltip: '帮助中心',
-  identifier: "".concat(IdentifierPrefix, "-menu.help-").concat(NSUUID.UUID().UUIDString()),
-  wkIdentifier: "".concat(IdentifierPrefix, "-webview.help-").concat(NSUUID.UUID().UUIDString()),
-  type: 2,
-  inGravityType: 3,
-  url: 'http://m.baidu.com/'
-}, {
-  rect: NSMakeRect(0, 0, 40, 40),
-  size: NSMakeSize(24, 24),
-  icon: 'setting',
-  activeIcon: 'setting-active',
-  tooltip: '设置',
-  identifier: "".concat(IdentifierPrefix, "-menu.setting-").concat(NSUUID.UUID().UUIDString()),
-  wkIdentifier: "".concat(IdentifierPrefix, "-webview.setting-").concat(NSUUID.UUID().UUIDString()),
-  type: 2,
-  inGravityType: 3,
-  url: 'http://m.baidu.com/'
-}];
 
 /***/ }),
 
@@ -337,7 +242,7 @@ var Menus = [{
 /*!**********************!*\
   !*** ./src/state.js ***!
   \**********************/
-/*! exports provided: context, document, version, sketchVersion, pluginFolderPath, resourcesPath, documentObjectID, default */
+/*! exports provided: context, document, version, sketchVersion, pluginFolderPath, resourcesPath, documentObjectID, IdentifierPrefix, SidePanelIdentifier, WINDOW_MOVE_INSTANCE, WINDOW_MOVE_SELECTOR, Menus, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -349,6 +254,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pluginFolderPath", function() { return pluginFolderPath; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resourcesPath", function() { return resourcesPath; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "documentObjectID", function() { return documentObjectID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "IdentifierPrefix", function() { return IdentifierPrefix; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SidePanelIdentifier", function() { return SidePanelIdentifier; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WINDOW_MOVE_INSTANCE", function() { return WINDOW_MOVE_INSTANCE; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WINDOW_MOVE_SELECTOR", function() { return WINDOW_MOVE_SELECTOR; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Menus", function() { return Menus; });
 var context;
 var document;
 var version;
@@ -356,6 +266,96 @@ var sketchVersion;
 var pluginFolderPath;
 var resourcesPath;
 var documentObjectID;
+var IdentifierPrefix;
+var SidePanelIdentifier;
+var WINDOW_MOVE_INSTANCE;
+var WINDOW_MOVE_SELECTOR;
+var Menus;
+
+function updateIdentifier(objectID) {
+  IdentifierPrefix = objectID ? "sketch-plugin-boilerplate-".concat(objectID) : 'sketch-plugin-boilerplate';
+  SidePanelIdentifier = "".concat(IdentifierPrefix, "-side-panel");
+  WINDOW_MOVE_INSTANCE = "window-move-instance-".concat(objectID);
+  WINDOW_MOVE_SELECTOR = "window-move-selector-".concat(objectID);
+  Menus = [{
+    rect: NSMakeRect(0, 0, 40, 40),
+    size: NSMakeSize(24, 24),
+    icon: 'artboard',
+    activeIcon: 'artboard-active',
+    tooltip: '上传画板',
+    identifier: "".concat(IdentifierPrefix, "-menu.artboard"),
+    wkIdentifier: "".concat(IdentifierPrefix, "-webview.artboard"),
+    type: 2,
+    inGravityType: 1,
+    url: 'https://aotu.io'
+  }, {
+    rect: NSMakeRect(0, 0, 40, 40),
+    size: NSMakeSize(24, 24),
+    icon: 'icon',
+    activeIcon: 'icon-active',
+    tooltip: '图标',
+    identifier: "".concat(IdentifierPrefix, "-menu.icon"),
+    wkIdentifier: "".concat(IdentifierPrefix, "-webview.icon"),
+    type: 2,
+    inGravityType: 1,
+    url: 'https://docs.pfan123.com/'
+  }, {
+    rect: NSMakeRect(0, 0, 40, 40),
+    size: NSMakeSize(24, 24),
+    icon: 'component',
+    activeIcon: 'component-active',
+    tooltip: '组件',
+    identifier: "".concat(IdentifierPrefix, "-menu.component"),
+    wkIdentifier: "".concat(IdentifierPrefix, "-webview.component"),
+    type: 2,
+    inGravityType: 1,
+    url: 'http://m.baidu.com/'
+  }, {
+    rect: NSMakeRect(0, 0, 40, 40),
+    size: NSMakeSize(24, 24),
+    icon: 'palette',
+    activeIcon: 'palette-active',
+    tooltip: '调色板',
+    identifier: "".concat(IdentifierPrefix, "-menu.palette"),
+    wkIdentifier: "".concat(IdentifierPrefix, "-webview.palette"),
+    type: 2,
+    inGravityType: 1,
+    url: 'http://m.baidu.com/'
+  }, {
+    rect: NSMakeRect(0, 0, 40, 40),
+    size: NSMakeSize(24, 24),
+    icon: 'fill',
+    activeIcon: 'fill-active',
+    tooltip: '填充',
+    identifier: "".concat(IdentifierPrefix, "-menu.fill"),
+    wkIdentifier: "".concat(IdentifierPrefix, "-webview.fill"),
+    type: 2,
+    inGravityType: 1,
+    url: 'http://m.baidu.com/'
+  }, {
+    rect: NSMakeRect(0, 0, 40, 40),
+    size: NSMakeSize(24, 24),
+    icon: 'help',
+    activeIcon: 'help-active',
+    tooltip: '帮助中心',
+    identifier: "".concat(IdentifierPrefix, "-menu.help"),
+    wkIdentifier: "".concat(IdentifierPrefix, "-webview.help"),
+    type: 2,
+    inGravityType: 3,
+    url: 'http://m.baidu.com/'
+  }, {
+    rect: NSMakeRect(0, 0, 40, 40),
+    size: NSMakeSize(24, 24),
+    icon: 'setting',
+    activeIcon: 'setting-active',
+    tooltip: '设置',
+    identifier: "".concat(IdentifierPrefix, "-menu.setting"),
+    wkIdentifier: "".concat(IdentifierPrefix, "-webview.setting"),
+    type: 2,
+    inGravityType: 3,
+    url: 'http://m.baidu.com/'
+  }];
+}
 
 function getPluginFolderPath(context) {
   // Get absolute folder path of plugin
@@ -367,7 +367,8 @@ function getPluginFolderPath(context) {
 /* harmony default export */ __webpack_exports__["default"] = (function (ctx) {
   context = ctx;
   document = context.document || context.actionContext.document || MSDocument.currentDocument();
-  documentObjectID = document.documentData().objectID() || NSUUID.UUID().UUIDString(); // eslint-disable-next-line no-new-wrappers
+  documentObjectID = document.documentData().objectID();
+  updateIdentifier(documentObjectID); // eslint-disable-next-line no-new-wrappers
 
   version = new String(context.plugin.version()).toString(); // eslint-disable-next-line no-new-wrappers
 
@@ -971,8 +972,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var mocha_js_delegate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mocha-js-delegate */ "./node_modules/mocha-js-delegate/index.js");
 /* harmony import */ var mocha_js_delegate__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mocha_js_delegate__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../state */ "./src/state.js");
-/* harmony import */ var _common_config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../common/config */ "./src/common/config.js");
-
 
 
 /**
@@ -1146,7 +1145,7 @@ var getSavePathFromModal = function getSavePathFromModal(fileName) {
 var observerWindowResizeNotification = function observerWindowResizeNotification(fn) {
   // Keep script around, otherwise everything will be dumped once its run
   // COScript.currentCOScript().setShouldKeepAround(true)
-  if (!getThreadDictForKey(_common_config__WEBPACK_IMPORTED_MODULE_2__["WINDOW_MOVE_INSTANCE"])) {
+  if (!getThreadDictForKey(_state__WEBPACK_IMPORTED_MODULE_1__["WINDOW_MOVE_INSTANCE"])) {
     // Create a selector
     var Selector = NSSelectorFromString('onWindowMove:');
     var delegate = new mocha_js_delegate__WEBPACK_IMPORTED_MODULE_0___default.a({
@@ -1159,8 +1158,8 @@ var observerWindowResizeNotification = function observerWindowResizeNotification
 
     var delegateInstance = delegate.getClassInstance();
     NSNotificationCenter.defaultCenter().addObserver_selector_name_object(delegateInstance, Selector, NSWindowDidResizeNotification, nil);
-    setThreadDictForKey(_common_config__WEBPACK_IMPORTED_MODULE_2__["WINDOW_MOVE_INSTANCE"], delegateInstance);
-    setThreadDictForKey(_common_config__WEBPACK_IMPORTED_MODULE_2__["WINDOW_MOVE_SELECTOR"], Selector);
+    setThreadDictForKey(_state__WEBPACK_IMPORTED_MODULE_1__["WINDOW_MOVE_INSTANCE"], delegateInstance);
+    setThreadDictForKey(_state__WEBPACK_IMPORTED_MODULE_1__["WINDOW_MOVE_SELECTOR"], Selector);
   }
 };
 /**
@@ -1169,12 +1168,12 @@ var observerWindowResizeNotification = function observerWindowResizeNotification
  */
 
 var removeObserverWindowResizeNotification = function removeObserverWindowResizeNotification() {
-  var delegateInstance = getThreadDictForKey(_common_config__WEBPACK_IMPORTED_MODULE_2__["WINDOW_MOVE_INSTANCE"]);
+  var delegateInstance = getThreadDictForKey(_state__WEBPACK_IMPORTED_MODULE_1__["WINDOW_MOVE_INSTANCE"]);
 
   if (delegateInstance) {
     NSNotificationCenter.defaultCenter().removeObserver_name_object(delegateInstance, NSWindowDidResizeNotification, nil);
-    removeThreadDictForKey(_common_config__WEBPACK_IMPORTED_MODULE_2__["WINDOW_MOVE_INSTANCE"]);
-    removeThreadDictForKey(_common_config__WEBPACK_IMPORTED_MODULE_2__["WINDOW_MOVE_SELECTOR"]);
+    removeThreadDictForKey(_state__WEBPACK_IMPORTED_MODULE_1__["WINDOW_MOVE_INSTANCE"]);
+    removeThreadDictForKey(_state__WEBPACK_IMPORTED_MODULE_1__["WINDOW_MOVE_SELECTOR"]);
   }
 };
 

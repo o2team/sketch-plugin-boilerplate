@@ -55,5 +55,6 @@ module.exports = {
     NSVisualEffectBlendingModeBehindWindow: false,
     NSPNGFileType: false,
     NSUserDefaults: false,
+    NSWindowStyleMaskDocModalWindow: false,
   }
 }

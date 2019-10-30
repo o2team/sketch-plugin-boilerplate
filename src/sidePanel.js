@@ -1,7 +1,6 @@
-import initState, { context } from './state'
-import { Menus, IdentifierPrefix, SidePanelIdentifier } from './common/config'
+import initState, { context, Menus, IdentifierPrefix, SidePanelIdentifier } from './state'
 import { Browser, BrowserManage } from './webview/index'
-import { createImageView, addButton, createBoxSeparator, observerWindowResizeNotification, removeObserverWindowResizeNotification, setSettingForKey, removeSettingForKey, dumpLayer } from './utils'
+import { createImageView, addButton, createBoxSeparator, observerWindowResizeNotification, removeObserverWindowResizeNotification, setSettingForKey, removeSettingForKey } from './utils'
 
 /**
  * insertSidePanel 插入侧边栏
@@ -45,7 +44,7 @@ const insertSidePanel = (toolbar, identifier, isInsert = false) => {
 
 
 export const onToggleSidePanel = context => {
-  console.error('✅✅✅ 展示 plugins')
+  console.error('✅✅ 展示 plugins')
   // register context
   initState(context)
 
@@ -128,15 +127,15 @@ export const onToggleSidePanel = context => {
         const webView = browserWindow.webContents
 
         webView.on('did-start-loading', () => {
-          console.error('did-start-loading')
+          // console.error('did-start-loading')
         })
 
         webView.on('did-finish-load', () => {
-          console.error('did-finish-load')
+          // console.error('did-finish-load')
         })
 
         webView.on('openView', options => {
-          console.error('openViewopenView')
+          // console.error('openViewopenView')
         })
       }
     })
@@ -154,18 +153,16 @@ export const onToggleSidePanel = context => {
 }
 
 
-export const onOpenDocument = () => {
-  console.error('✅✅✅onOpenDocument')
-}
+export const onOpenDocument = () => {}
 
-export const onCloseDocument = () => {
-  console.error('✅✅✅onCloseDocument')
+export const onCloseDocument = context => {
+  initState(context)
   onShutdown()
 }
 
 // handler cleanly Long-running script
 export function onShutdown () {
-  console.error('✅✅✅ my-plugins onShutdown')
+  // console.error('✅✅ my-plugins onShutdown')
   const threadDictionary = NSThread.mainThread().threadDictionary()
   BrowserManage.empty()
   const prefixRegExp = new RegExp(`${IdentifierPrefix}*`)
