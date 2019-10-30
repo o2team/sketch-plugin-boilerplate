@@ -52,6 +52,11 @@ export const getSelected = () => {
 export const getScriptExecPath = context => context.scriptPath
 
 /**
+ * document 获取所选择 document objectID
+ */
+export const getDocumentID = () => context.document.documentData().objectID()
+
+/**
  * getDocumentPath 获取所选择 document 路径
  */
 export const getDocumentPath = () => {

@@ -2,6 +2,15 @@ import MochaJSDelegate from 'mocha-js-delegate'
 import { context } from '../session'
 import { WINDOW_MOVE_INSTANCE, WINDOW_MOVE_SELECTOR } from '../common/config'
 
+
+/**
+ * openUrlInBrowser 浏览器打开链接
+ * @param {string} url
+ */
+export const penUrlInBrowser = url => {
+  NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url))
+}
+
 /**
  * getNewUUID 获取唯一 ID
  */
