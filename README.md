@@ -1,12 +1,12 @@
 # sketch-plugin-boilerplate
 
-`sketch-plugin-boilerplate` - A template to create sketch plugins displaying side panel.
+`sketch-plugin-boilerplate` - 快速创建侧边栏 sketch plugins 开发模版样例。
 
-## Installation
+## 安装
 
-- [Download](../../releases/latest/download/my-sketch-plugin.sketchplugin.zip) the latest release of the plugin
-- Un-zip
-- Double-click on sketch-plugin-boilerplate.sketchplugin
+```
+git clone git@github.com:o2team/sketch-plugin-boilerplate.git
+```
 
 ## Development Guide
 
