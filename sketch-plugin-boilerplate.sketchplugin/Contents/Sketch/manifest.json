@@ -20,7 +20,7 @@
     {
       "name": "toggleSidePanel",
       "identifier": "sketch-plugin-boilerplate.toggle-side-panel",
-      "script": "__sidePanel.js",
+      "script": "sidePanel.js",
       "shortcut": "ctrl command k",
       "handlers": {
         "run": "onToggleSidePanel",

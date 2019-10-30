@@ -1,11 +1,12 @@
 # sketch-plugin-boilerplate
+
 `sketch-plugin-boilerplate` - A template to create sketch plugins displaying side panel.
 
 ## Installation
 
 - [Download](../../releases/latest/download/my-sketch-plugin.sketchplugin.zip) the latest release of the plugin
 - Un-zip
-- Double-click on my-sketch-plugin.sketchplugin
+- Double-click on sketch-plugin-boilerplate.sketchplugin
 
 ## Development Guide
 
