@@ -51,7 +51,7 @@ function updateIdentifier (objectID) {
       wkIdentifier: `${IdentifierPrefix}-webview.component`,
       type: 2,
       inGravityType: 1,
-      url: 'http://m.baidu.com/',
+      url: 'https://m.baidu.com/',
     },
     {
       rect: NSMakeRect(0, 0, 40, 40),
@@ -63,7 +63,7 @@ function updateIdentifier (objectID) {
       wkIdentifier: `${IdentifierPrefix}-webview.palette`,
       type: 2,
       inGravityType: 1,
-      url: 'http://m.baidu.com/',
+      url: 'https://aotu.io/',
     },
     {
       rect: NSMakeRect(0, 0, 40, 40),
@@ -75,7 +75,7 @@ function updateIdentifier (objectID) {
       wkIdentifier: `${IdentifierPrefix}-webview.fill`,
       type: 2,
       inGravityType: 1,
-      url: 'http://m.baidu.com/',
+      url: 'https://aotu.io/',
     },
     {
       rect: NSMakeRect(0, 0, 40, 40),
@@ -87,7 +87,7 @@ function updateIdentifier (objectID) {
       wkIdentifier: `${IdentifierPrefix}-webview.help`,
       type: 2,
       inGravityType: 3,
-      url: 'http://m.baidu.com/',
+      url: 'https://aotu.io/',
     },
     {
       rect: NSMakeRect(0, 0, 40, 40),
@@ -99,7 +99,7 @@ function updateIdentifier (objectID) {
       wkIdentifier: `${IdentifierPrefix}-webview.setting`,
       type: 2,
       inGravityType: 3,
-      url: 'http://m.baidu.com/',
+      url: 'https://aotu.io/',
     }
   ]
 }
