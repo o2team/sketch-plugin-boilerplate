@@ -37,6 +37,9 @@ yarn run watch
 yarn run start
 ```
 
+### 插件下载体验
+
+[sketch-plugin-boilerplate.sketchplugin0.0.2.zip](https://github.com/o2team/sketch-plugin-boilerplate/raw/master/sketch-plugin-boilerplate.sketchplugin0.0.2.zip)
 
 ## 开发指引
 
