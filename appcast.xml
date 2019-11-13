@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>sketch-plugin-boilerplate - A template to create sketch plugins displaying side panel.</title>
+    <link>http://img.pfan123.com/appcast.xml</link>
+    <description>sketch-plugin-boilerplate</description>
+    <language>en</language>
+    <item>
+      <title>Version 0.0.1</title>
+      <description>
+        <![CDATA[
+            <ul>
+              <li>Minor update v0.0.1</li>
+            </ul>
+          ]]>
+      </description>
+      <enclosure url="http://img.pfan123.com/sketch-plugin-boilerplate.sketchplugin.zip" sparkle:version="0.0.1"/>
+    </item>
+    <item>
+      <title>Version 0.0.2</title>
+      <description>
+        <![CDATA[
+            <ul>
+              <li>Minor update v0.0.2</li>
+            </ul>
+          ]]>
+      </description>
+      <enclosure url="http://img.pfan123.com/sketch-plugin-boilerplate.sketchplugin0.0.2.zip" sparkle:version="0.0.2"/>
+    </item>
+  </channel>
+</rss>
