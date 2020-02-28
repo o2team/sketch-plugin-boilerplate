@@ -737,3 +737,4 @@ yarn run start
 - [logancollins/Mocha](https://github.com/logancollins/Mocha)
 - [Sketch Developer Community](https://sketchplugins.com/)
 - [Sketch Developer](https://developer.sketch.com/)
+- [Sketch API](https://github.com/sketch-hq/)
