@@ -1,0 +1,129 @@
+function displayImageDragHelpDialog() {
+  return displayAlert({
+    buttons: ['OK'],
+    optionToNotShowAgain: 'DragLayerHelp',
+    title: 'Adding Symbols to Document',
+    description: 'Along with adding the selected layer, DSM will add two additional groups of symbols:\n\n1. Symbols that are nested inside that layer and all of their children.\n\n2. Symbols that are the same size as any of the nested symbols, and can be used as potential overrides.'
+  });
+}
+
+function displayUpdateDocumentDialog() {
+  var result = displayAlert({
+    buttons: ['OK', 'Cancel'],
+    optionToNotShowAgain: 'UpdateDocumentHelp',
+    title: 'Update Document',
+    description: 'Update styles and symbols in the document to their library version.\n\nNote: To import all symbols, styles and colors to the document, click "..."  and select Selective Sync from the menu.'
+  });
+
+  if (result == 1001){
+    //user canceled this operation
+    return false;
+  }
+
+  return true;
+}
+
+function displayNoImageInCacheAlert() {
+  return displayAlert({
+    buttons: ['OK'],
+    title: 'Error Syncing Data to Document',
+    description: 'We could not find the element you tried to insert to the document. Please check you connection and try to fetch the library data again.\nIf you are continuing to experience this issue contact us at support@invisionapp.com',
+    style: 'error'
+  });
+}
+
+function displayImportLibraryFromBrandAi() {
+  return displayAlert({
+    buttons: ['OK'],
+    title: 'Import Library from Brand.ai',
+    description: 'To import your library from Brand.ai please contact support@invisionapp.com'
+  });
+}
+
+function displayReorderManualIntentConfirmation() {
+  return displayAlert({
+    buttons: ['Switch to Manual', 'Cancel'],
+    title: 'Sort manually?',
+    optionToNotShowAgain: 'ConfirmSortManually',
+    description: 'The items in this folder are currently sorted alphanumerically. To rearrange them, switch to manual sorting. This applies to everyone viewing this library.\n'
+  });
+}
+
+function displayReorderAlphanumericallyIntentConfirmation() {
+  return displayAlert({
+    buttons: ['Confirm', 'Cancel'],
+    title: 'Sort alphanumerically?',
+    optionToNotShowAgain: 'ConfirmSortAphanumerically',
+    description: 'If you switch to alphanumeric sorting, items in this folder will be sorted by name and you will not be able to rearrange them manually. This applies to everyone viewing this library.\n'
+  });
+}
+
+
+function displayPreventReorderingWhileAlphanumeric() {
+  return displayAlert({
+    buttons: ['OK'],
+    title: 'Switch to manual',
+    description: 'The items in this folder are currently sorted alphanumerically. To rearrange them, switch the folder to manual sorting.\n'
+  });
+}
+
+function displayVersionControlFeatureBlocked(plugin) {
+  return displayAlert({
+    buttons: ['Get in touch', 'Cancel'],
+    title: 'Upgrade to DSM Enterprise',
+    description: 'Version control is part of the DSM Enterprise plan.\n',
+    iconName: 'upgrade',
+    plugin: plugin
+  });
+}
+
+function displayErrorApplyingSharedLayerStyle(){
+  return displayAlert({
+    title: 'Could not import layer style ',
+    description: 'There was an error while trying to add the item to the document. Try re-uploading the layer style or contact us at support@invisionapp.com if the problem persists.',
+    style: 'error'
+  });
+}
+
+/**
+ * Used for displaying a prompt with a text input field, not in use today but kept for future needs
+ * (used in the past for creating a section under root folders)
+ */
+function displayPrompt(options) {
+  const buttons = options.buttons || ['OK'];
+
+  const alert = NSAlert.new();
+  alert.setMessageText(options.title);
+
+  if (options.description) {
+    alert.setInformativeText(options.description);
+  }
+
+  buttons.forEach(function(button) {
+    alert.addButtonWithTitle(button);
+  });
+
+
+  var textField;
+  if (options.multiline) {
+    textField = NSTextView.alloc().initWithFrame(NSMakeRect(0, 0, 295, 40));
+    textField.scrollEnabled = true;
+    textField.showsVerticalScrollIndicator= true;
+    textField.text = options.defaultText || '';
+
+  } else {
+    textField = NSTextField.alloc().initWithFrame(NSMakeRect(0, 0, 295, 22));
+    textField.setStringValue(options.defaultText || '');
+  }
+
+  textField.setEditable(true);
+  alert.setAccessoryView(textField);
+  alert.window().setInitialFirstResponder(textField);
+
+  if (alert.runModal() == 1000) {
+    var text = (textField.class() == 'NSTextView') ? textField.string() : textField.stringValue();
+    return coerceString(text);
+  } else {
+    return null;
+  }
+}

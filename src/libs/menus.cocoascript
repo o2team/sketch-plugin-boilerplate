@@ -1,0 +1,416 @@
+function popUpContextMenuInWebView(menu, webView, point) {
+  const syntheticClick = [NSEvent mouseEventWithType:NSRightMouseDown
+  location:flippedPointInView(webView, point.x, point.y)
+  modifierFlags:0
+  timestamp:(NSProcessInfo.processInfo().systemUptime())
+  windowNumber:(webView.window().windowNumber())
+  context:null
+  eventNumber:9999
+  clickCount:1
+  pressure:0.0];
+
+  [NSMenu popUpContextMenu:menu withEvent:syntheticClick forView:webView];
+}
+
+
+function addMenuItem(nib, menu, title, action, image, indent) {
+  const item = NSMenuItem.new();
+  if (title) {
+    item.setTitle(title);
+  }
+  if (action) {
+    nib.attachTargetAndAction(item, action);
+  }
+  if (image) {
+    item.setImage(image);
+  }
+  if (indent) {
+    item.setIndentationLevel(indent);
+  }
+
+  menu.addItem(item);
+  return item;
+}
+
+/**
+ * Build a nested representation of the styleguide flat array of colors (globalAssets.colors)
+ * @param allColors - array of all color items of the styleguide(s)
+ * @returns {Array} an array of folder objects with name and items array, both kinds of arrays are sorted alphanumerically
+ */
+function getAllColorFoldersData(allColors) {
+  const colorsByFolderId = {};
+
+  // step 1: group colors by their folder id
+  allColors.forEach((color) => {
+    const folderId = color.folderId;
+    if (folderId){
+      colorsByFolderId[folderId] = colorsByFolderId[folderId] || {
+        name: color.folderName,
+        colors: []
+      };
+      colorsByFolderId[folderId].colors.push(color);
+    }
+  });
+
+  const folders = Object.values(colorsByFolderId);
+
+  // step 2: sort the colors array of each folder
+  folders.forEach((folder) => {
+    folder.colors = util.sortObjectArrayByStringKey(folder.colors, 'name');
+  });
+
+  // step 3: sort folders array by folder name
+  return util.sortObjectArrayByStringKey(folders, 'name');
+}
+
+function colorPaletteMenu(nib, selectedColorID, actionMaker) {
+  const styleData = persist.get('dsmStyleData');
+  const swatchSize = NSMakeSize(24, 12);
+  const menu = NSMenu.new();
+
+  const colorPalettes = getAllColorFoldersData(styleData.globalAssets.colors);
+
+  let firstPalette = true;
+  [DEFAULT_COLORS].concat(colorPalettes).forEach(function(palette) {
+    if (palette.colors) {
+      if (palette.colors.length) {
+        if (firstPalette) {
+          firstPalette = false;
+        } else {
+          menu.addItem(NSMenuItem.separatorItem());
+        }
+
+        addMenuItem(nib, menu, palette.name || 'Untitled Folder');
+        palette.colors.forEach(function(color) {
+          const swatch = swatchImageWithColor(colors.NSColorFromString(color.value), swatchSize);
+          const menuItem = addMenuItem(nib, menu, color.name || 'Untitled Color', actionMaker(color._id), swatch, 1);
+          if (color._id == selectedColorID) {
+            menuItem.setState(NSOnState);
+          }
+        });
+      }
+    }
+  });
+  return menu;
+}
+
+function swatchImageWithColor(color, size) {
+  const image = NSImage.alloc().initWithSize(size);
+  const rect = NSMakeRect(0, 0, size.width, size.height);
+  const strokeRect = NSMakeRect(0.5, 0.5, size.width - 1, size.height - 1);
+  const borderColor = NSColor.blackColor().colorWithAlphaComponent(0.33);
+
+  image.lockFocus();
+
+  color.drawSwatchInRect(rect);
+  borderColor.set();
+  NSBezierPath.strokeRect(strokeRect);
+
+  image.unlockFocus();
+
+  return image;
+}
+
+function snapshotsSubMenu(nib, payload, organization, selectedStyleguideId) {
+  const loadStyleguideEventName = payload.exampleStyleguideLoaded ? 'onLoadExampleLibrary' : 'onStyleguideChanged';
+  const data = payload.exampleStyleguideLoaded ? { openedFrom: 'menu' } : { organizationId: organization._id, styleguideId: selectedStyleguideId };
+
+  let releasesMenu = NSMenu.new();
+  let workingCopyItem = addMenuItem(nib, releasesMenu, 'Shared Draft', () =>  {
+    postWebUIEvent(loadStyleguideEventName, data)
+  });
+
+  if (!payload.snapshotId) {
+    workingCopyItem.setState(NSOnState); //mark working copy as selected
+  }
+
+  payload.snapshots.forEach((snapshot) => {
+    const snapshotData = Object.assign({}, data, { snapshotId: snapshot._id });
+    let releaseMenuItem = addMenuItem(nib, releasesMenu, snapshot.name, () => postWebUIEvent(loadStyleguideEventName, snapshotData));
+
+    if (snapshot._id == payload.snapshotId) {
+      releaseMenuItem.setState(NSOnState); //mark release as selected
+    }
+  });
+
+  return releasesMenu;
+}
+
+function styleguideActionsSubMenu(context, nib, payload, organization, selectedStyleguideId){
+  let styleguideActionsMenu = NSMenu.new();
+
+  //if versions exist for the styleguide add submenu with their list
+  if (payload.snapshots && payload.snapshots.length > 0) {
+    const snapshotName = payload.snapshotName || 'Shared Draft';
+    addMenuItem(nib, styleguideActionsMenu, snapshotName).setEnabled(false);
+
+    let changeVersionMenuItem = addMenuItem(nib, styleguideActionsMenu, 'Switch Version');
+    changeVersionMenuItem.setSubmenu(snapshotsSubMenu(nib, payload, organization, selectedStyleguideId));
+    styleguideActionsMenu.addItem(NSMenuItem.separatorItem());
+  }
+
+
+  if (payload.styleguideId) {
+    const event = payload.exampleStyleguideLoaded ? 'openExampleStyleguideInBrowser' : 'openStyleguideInBrowser';
+    addMenuItem(nib, styleguideActionsMenu, 'View on the web…', () => postWebUIEvent(event));
+  }
+
+  if(payload.exampleStyleguideLoaded){
+    return styleguideActionsMenu;
+  }
+
+  if (!payload.readOnly && payload.styleguideId){
+    addMenuItem(nib, styleguideActionsMenu, 'Release new version…', function() {
+      if (shouldAllowReleaseVersion(organization)) {
+        [(nib.mainWindow) beginSheet:(nib.createVersionSheet) completionHandler:null];
+      } else {
+        const alertResult = displayVersionControlFeatureBlocked(context.plugin);
+        if (!alertResult || alertResult === NSAlertFirstButtonReturn ) {
+          postWebUIEvent('enterpriseUpgradeInfo');
+        }
+      }
+    });
+  }
+
+  if (payload.snapshots && payload.snapshots.length > 0){
+    addMenuItem(nib, styleguideActionsMenu, 'Version history…', function() {
+      postWebUIEvent('viewStyleguideReleasesPage');
+    });
+  }
+
+  styleguideActionsMenu.addItem(NSMenuItem.separatorItem());
+  if (!payload.readOnly && payload.styleguideId){
+    addMenuItem(nib, styleguideActionsMenu, 'Manage Symbols…', function() {
+      manageSymbolsApp(context, nib);
+    });
+  }
+
+  return styleguideActionsMenu;
+}
+
+function shouldAllowReleaseVersion(organization) {
+  const isOrganizationOnFreePlan =
+    organization.subscriptionPlan &&
+    organization.subscriptionPlan.subscriptionType === 'free';
+
+  // release version feature is not allowed on Free plan
+  return !isOrganizationOnFreePlan;
+}
+
+function addLibraryMenuItem(context, nib, menu){
+
+  const addLibrary = addMenuItem(nib, menu, 'Import');
+
+  var addLibraryActionsMenu = NSMenu.new();
+
+  addMenuItem(nib, addLibraryActionsMenu, 'Craft Library…', function(){
+    importCraftLibrary(nib);
+  });
+
+  addMenuItem(nib, addLibraryActionsMenu, 'Brand.ai…', function(){
+    displayImportLibraryFromBrandAi();
+  });
+
+  addLibrary.setSubmenu(addLibraryActionsMenu);
+
+  menu.addItem(NSMenuItem.separatorItem());
+}
+
+function styleguideSettingsMenu(context, nib, menu, payload){
+
+  //we already know there are organization at this points
+  payload.organizations.forEach(function(organization){
+
+    if (payload.organizations.length > 0) {
+      addMenuItem(nib, menu, organization.name)
+        .setEnabled(false);
+    }
+
+    // iterate through styleguides
+    const styleguides = organization.styleguides;
+    const selectedStyleguideId = payload.styleguideId;
+
+    if (styleguides && styleguides.length > 0){
+      styleguides.forEach(function(styleguide) {
+        var styleguideMenuItem = addMenuItem(nib, menu, styleguide.name, function(){
+          postWebUIEvent('onStyleguideChanged', { organizationId: organization._id, styleguideId: styleguide._id, latestSnapshot: true });
+        }, null, 0);
+
+        //if it is the selected styleguide
+        if (!payload.exampleStyleguideLoaded && styleguide._id == selectedStyleguideId) {
+
+          styleguideMenuItem.setState(NSOnState); //mark styleguide as selected
+          styleguideMenuItem.setSubmenu(styleguideActionsSubMenu(context, nib, payload, organization, selectedStyleguideId));
+        }
+      });
+    }
+
+    menu.addItem(NSMenuItem.separatorItem());
+  });
+}
+
+function addExampleLibraryMenuItem(context, nib, menu, payload) {
+  let exampleLibraryMenuItem = addMenuItem(nib, menu, "Example Library",
+    () => postWebUIEvent('onLoadExampleLibrary', { latestSnapshot: true, openedFrom: 'menu' }), null, 0);
+
+  if (payload.exampleStyleguideLoaded) {
+    exampleLibraryMenuItem.setState(NSOnState);
+    exampleLibraryMenuItem.setSubmenu(styleguideActionsSubMenu(context, nib, payload));
+  }
+
+  menu.addItem(NSMenuItem.separatorItem());
+}
+
+var createSortMenuItems = function(nib, menu, payload){
+  const isAlphanumerical = payload.sortMode === 'alphanumeric' ;
+  const sortAlphanumericallyItem = addMenuItem(nib, menu, 'Sort by Name', function() {
+    const alertResult = displayReorderAlphanumericallyIntentConfirmation();
+    if (!alertResult || alertResult === NSAlertFirstButtonReturn ) {
+      payload.data = { sortMode: 'alphanumeric'};
+      postWebUIEvent('onUpdateFolderOrContainer', payload);
+    }
+  });
+
+  const sortManuallyItem = addMenuItem(nib, menu, 'Sort Manually', function() {
+    const alertResult = displayReorderManualIntentConfirmation();
+    if (!alertResult || alertResult === NSAlertFirstButtonReturn ) {
+      payload.data = { sortMode: 'manual' };
+      postWebUIEvent('onUpdateFolderOrContainer', payload);
+    }
+  });
+  if (isAlphanumerical){
+    sortAlphanumericallyItem.setState(NSOnState);
+  }else{
+    sortManuallyItem.setState(NSOnState);
+  }
+};
+
+var createShowOnWebMenuItem = function(nib, menu, menuItem, payload) {
+  const webConfig = payload.clientsConfig.find(function(config) {
+    return config.client === 'dsm_web';
+  });
+
+  if(!webConfig) {
+    return;
+  }
+
+  const showOnWebMenuItems = addMenuItem(nib, menu, menuItem.value, function() {
+    // we need to pass the entire clientsConfig back to the server.
+    // mutate the webConfig (which is the reference into the payload) and pass the entire payload to the server
+    webConfig.hidden = !webConfig.hidden;
+    payload.data = { clientsConfig: payload.clientsConfig };
+    postWebUIEvent('onUpdateFolderOrContainer', payload);
+  });
+
+  const checked = webConfig.hidden ? NSOffState : NSOnState;
+  showOnWebMenuItems.setState(checked);
+};
+
+var createSetColorMenuItem = function(nib, menu, menuItem, payload) {
+  addMenuItem(nib, menu, menuItem.value)
+    .setSubmenu(colorPaletteMenu(nib, payload.element.textColorID, function(colorID) {
+        return function() {
+          postWebUIEvent('onUpdateItem', {
+            type: payload.type,
+            elementID: payload.elementID,
+            data: { textColor: colorID }
+          });
+        };
+      })
+    );
+};
+
+/// externally used functions
+/*
+ General menu that allow to define rename or delete action or action with a callback
+ */
+var genericContextMenu = function(payload, nib) {
+  const { menuItems, targetItemName } = payload;
+
+  if (menuItems && menuItems.length > 0) {
+    //create new menu and allow disabling items
+    const menu = NSMenu.new();
+    menu.setAutoenablesItems(false);
+
+    addMenuItem(nib, menu, targetItemName).setEnabled(false);;
+    menu.addItem(NSMenuItem.separatorItem());
+
+    var sortItem = null;
+    for (var i = 0; i < menuItems.length; i++) {
+      const menuItem = menuItems[i];
+      switch (menuItem.key){
+        case 'rename':
+          addMenuItem(nib, menu, menuItem.value, () => {
+            postWebUIEvent('onBeginEditItem', menuItem.payload);
+          });
+          break;
+        case 'set-text-color':
+          createSetColorMenuItem(nib, menu, menuItem, menuItem.payload);
+          break;
+        case 'sort':
+          sortItem = menuItem;
+          break;
+        case 'showOnWeb':
+          createShowOnWebMenuItem(nib, menu, menuItem, menuItem.payload);
+          break;
+        default:
+          if (menuItem.callbackFunction) {
+            addMenuItem(nib, menu, menuItem.value, () => {
+              postWebUIEvent(menuItem.callbackFunction, menuItem.payload);
+            });
+          } else {
+            debug('probable mistake in menu item key: ' + menuItem)
+          }
+      }
+    }
+
+    // as this one need to appear at the end it get a special treatment, just finding in regular run and if found adding here
+    if (sortItem){
+      if (menuItems.length > 1) {
+        menu.addItem(NSMenuItem.separatorItem());
+      }
+      createSortMenuItems(nib, menu, sortItem.payload);
+    }
+
+    popUpContextMenuInWebView(menu, nib.mainWebView, payload);
+  }
+};
+
+/*
+ the main application menu presenting the organization navigation for styleguides and pages plus more general action
+ */
+var applicationSettingsMenu = function(payload, context, nib, signoutCallback){
+  if (payload.idToken) {
+    //create new menu and allow disabling items
+    var menu = NSMenu.new();
+    menu.setAutoenablesItems(false);
+
+
+    if (payload.organizations && payload.organizations.length > 0) {
+      //iterate through organizations
+
+      styleguideSettingsMenu(context, nib, menu, payload);
+
+      addExampleLibraryMenuItem(context, nib, menu, payload);
+
+      addLibraryMenuItem(context, nib, menu);
+
+      //todo: do we want to limit only for users with editing permissions?
+      //if there are organizations we want to add link to add users to them
+      addMenuItem(nib, menu, 'Add Collaborators...', function() {
+        postWebUIEvent('addNewMemberInBrowser');
+      });
+    }
+
+    addMenuItem(nib, menu, 'Sign Out', function() {
+      signoutCallback();
+    });
+
+    //add version info
+    menu.addItem(NSMenuItem.separatorItem());
+    addMenuItem(nib, menu, 'Version: ' + VERSION).setEnabled(false);
+
+    return menu;
+  }
+  return null;
+}

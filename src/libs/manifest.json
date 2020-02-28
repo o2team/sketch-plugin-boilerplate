@@ -1,0 +1,55 @@
+{
+  "name": "Design System Manager",
+  "version": "1.1.22",
+  "identifier": "com.invision.dsm",
+  "description": "Create, maintain, and evolve your design system in Sketch.",
+  "author": "InVision",
+  "compatibleVersion": "40.0",
+  "order": 2,
+  "commands": [
+    {
+      "script": "brandai.cocoascript",
+      "handler": "display",
+      "shortcut": "cmd l",
+      "name": "Design System Manager",
+      "identifier": "dsm-display"
+    },
+    {
+      "script": "handle-selection.cocoascript",
+      "handlers": {
+        "actions": {
+          "SelectionChanged.finish": "onSelectionChanged"
+        }
+      }
+    },
+    {
+      "script" : "copy-paste-action-listeners.js",
+      "name" : "Copy Paste Listeners",
+      "handlers" : {
+        "actions": {
+          "Paste.finish": "onPasteFinish",
+          "Copy.finish": "onCopyFinish",
+          "Copy.begin": "onCopyBegin"
+        }
+      }
+    },
+    {
+      "identifier": "open-from-craft-panel",
+      "script": "handle-craft-launcher.js",
+      "handler": "onOpenFromCraftPanel",
+      "name": "Open From Craft Panel"
+   },
+    {
+      "identifier": "close-from-craft-panel",
+      "script": "handle-craft-launcher.js",
+      "handler": "onCloseFromCraftPanel",
+      "name": "Close From Craft Panel"
+    }
+  ],
+  "menu": {
+    "isRoot": true,
+    "items": [
+      "dsm-display"
+    ]
+  }
+}

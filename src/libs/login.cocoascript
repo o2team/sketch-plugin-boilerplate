@@ -1,0 +1,287 @@
+const LoginHelper = require('./login-helper');
+const loginHelper = new LoginHelper(getLoginHelperCallbacks());
+
+const CraftLoginHelper = require('./craft-manager-login-helper');
+const craftLoginHelper = new CraftLoginHelper(getCraftLoginCallbacks());
+
+var loggedInViaCraft = true;
+
+var preferredWindowHeight;
+var preferredWindowWidth;
+
+const neededHeight = 300;
+const neededWidth = 277;
+
+function getCMBundle() {
+  var cmURL = null;
+  var runningCraftApps = NSRunningApplication.runningApplicationsWithBundleIdentifier("com.invisionlabs.CraftManager");
+
+  if (runningCraftApps.length > 0) {
+    cmURL = runningCraftApps[0].bundleURL();
+  } else {
+    cmURL = NSWorkspace.sharedWorkspace().URLForApplicationWithBundleIdentifier("com.invisionlabs.CraftManager");
+  }
+
+  return NSBundle.bundleWithURL(cmURL);
+}
+
+function loginViaCraftSupported()  {
+  try {
+    var bundle = getCMBundle();
+    var version = bundle ? bundle.objectForInfoDictionaryKey("CFBundleVersion") : null;
+
+    debug('craft version: ' + version);
+
+    // This version of CM has CMSigninNotification
+    if ([version isKindOfClass:[NSString class]] && [version integerValue] > 97) {
+      return true;
+    }
+  } catch (err) {
+    debug('can not read craft version');
+    debug(err);
+  }
+
+  return false;
+}
+
+function resizeToLoginScreenSIze(nib) {
+
+  var currentFrame = nib.mainWindow.frame();
+
+  if (currentFrame.size.height != neededHeight ||
+      currentFrame.size.width != neededWidth) {
+
+    // Remember current size and set the window frame size to be used later
+    preferredWindowHeight = currentFrame.size.height;
+    preferredWindowWidth = currentFrame.size.width;
+
+    resizeFrameToNewHeightExpandingDown(nib, currentFrame, neededHeight, neededWidth);
+
+    // make the window display when focus is on craft mgr dialog
+    nib.mainWindow.setHidesOnDeactivate(false);
+    nib.mainWindow.setLevel(NSNormalWindowLevel);
+
+    // make the window display after signout
+    nib.mainWindow.makeKeyAndOrderFront(nib.mainWindow);
+    nib.mainWindow.orderFrontRegardless();
+  }
+}
+
+function shouldUseLoginHelper() {
+  var env =  NSProcessInfo.processInfo().environment();
+
+  return env.DSM_LOGIN_VIA_LOGIN_HELPER;
+}
+
+function displayAuthLogin(nib) {
+
+  var currentFrame = nib.mainWindow.frame();
+
+  function resetWindowBehavior() {
+    // After login or cancel, change the frame of the plugin back to the user preferences.
+    if (preferredWindowHeight && currentFrame.size.height != preferredWindowHeight &&
+        currentFrame.size.width != preferredWindowWidth) {
+
+      resizeFrameToNewHeightExpandingDown(nib, currentFrame, preferredWindowHeight, preferredWindowWidth);
+
+      // Return the dialog back to floating mode to make it on top of new sketch docs
+      nib.mainWindow.setHidesOnDeactivate(true);
+      nib.mainWindow.setLevel(NSFloatingWindowLevel);
+
+      NSApp.activateIgnoringOtherApps(true);
+    }
+  }
+
+  try {
+    if (!loginViaCraftSupported() || shouldUseLoginHelper()) {
+      loggedInViaCraft = false;
+    } else {
+      debug('calling craft login mgr');
+      loggedInViaCraft = true;
+
+      craftLoginHelper.displayLoginWindow({
+        onStateChange: function () {
+          debug('login notification');
+          resetWindowBehavior();
+          handleCraftLoginStateChanged();
+        }
+      });
+    }
+  } catch (err) {
+    debug('craft login failed, trying login helper');
+    debug(err);
+
+    loggedInViaCraft = false;
+  }
+
+  if (!loggedInViaCraft) {
+    loginHelper.displayLoginWindow(CGRectMake(currentFrame.origin.x + 10, currentFrame.origin.y - 30, neededWidth - 20, neededHeight),
+      {
+        onStateChange: function (idToken, refreshToken, viewState) {
+          resetWindowBehavior();
+          handleLoginHelperAuthStateChanged(idToken, refreshToken, viewState);
+        }
+      }
+    );
+  }
+};
+
+function getLoginHelperCallbacks() {
+  return {
+    onStateChange: handleLoginHelperAuthStateChanged,
+    onWindowClosed: function() {
+      exit();
+    },
+    onLogout: handleLogout,
+    onConfigChange: handleAuthConfigChanged
+  }
+}
+
+function getCraftLoginCallbacks() {
+  return {
+    onStateChange: handleCraftLoginStateChanged,
+    onLogout: handleLogout
+  }
+}
+
+function handleLogout(appOrginatedLogout){
+  debug('logging out');
+  const defaults = [NSUserDefaults standardUserDefaults];
+  var isLoggedIn = defaults.stringForKey(getKeyName('IdToken')) !== null;
+
+  [defaults setObject:null forKey:getKeyName('IdToken')]; //clean the key
+  [defaults setObject:null forKey:getKeyName('RefreshToken')]; //clean the access token
+  [defaults setObject: null forKey: getKeyName('StyleguideId')]; //clean the styleguide id
+
+  [defaults setObject:null forKey:getKeyName('SignOnType')];
+  [defaults setObject:null forKey:getKeyName('DomainInfo')];
+  [defaults setObject:null forKey:getKeyName('invisionAuthMode')];
+
+
+  if (isLoggedIn) {
+    if (appOrginatedLogout) {
+      loggedInViaCraft ? craftLoginHelper.sendLogoutNotification() : loginHelper.sendLogoutNotification();
+    }
+    postWebUIEvent('onUserSignedOut');
+  }
+}
+
+function handleAuthConfigChanged(signOnType, domainInfo){
+  const defaults = [NSUserDefaults standardUserDefaults];
+
+  if (signOnType){
+    [defaults setObject:signOnType forKey:getKeyName('SignOnType')];
+  }
+
+  if (domainInfo){
+    // Craft might send different value for pc domain, but login helper only one value, so need to set
+    // the pc domain value manually
+    domainInfo.pcDomain = domainInfo.domain;
+
+    [defaults setObject:domainInfo forKey:getKeyName('DomainInfo')];
+  }
+}
+
+function handleLoginHelperAuthStateChanged(idToken, refreshToken, viewState) {
+  const defaults = [NSUserDefaults standardUserDefaults];
+  if (idToken) {
+
+    //we should set the domain before sending token updated action or consider merging this two actions
+    var domainInfo = defaults.dictionaryForKey(getKeyName('DomainInfo'));
+    var invisionAuthMode =  defaults.stringForKey(getKeyName('invisionAuthMode')) || 'v6';
+    postWebUIEvent('onSetUserAuthInfo', {domainInfo: coerceJS(domainInfo), invisionAuthMode: coerceString(invisionAuthMode)});
+
+    const data = { idToken: coerceString(idToken), refreshToken: coerceString(refreshToken) };
+    postWebUIEvent('onUserAuthenticated', data);
+
+  } else {
+    postWebUIEvent('onUserAuthenticated', { error: Error('Error authenticating user') });
+  }
+}
+
+function handleCraftLoginStateChanged() {
+
+  var { idToken, refreshToken, domainInfo, invisionAuthMode } = getLoginDataFromCraftDefaults();
+
+  if (idToken) {
+
+    postWebUIEvent('onSetUserAuthInfo', {domainInfo: coerceJS(domainInfo), invisionAuthMode: coerceString(invisionAuthMode)});
+
+    const data = { idToken: coerceString(idToken), refreshToken: coerceString(refreshToken) };
+    postWebUIEvent('onUserAuthenticated', data);
+
+  } else {
+    postWebUIEvent('onUserAuthenticated', { error: Error('Error authenticating user') });
+  }
+}
+
+// This will mainly retrieve login info that is returned from login helper
+function getLoginDataFromUserDefaults() {
+  var defaults = [NSUserDefaults standardUserDefaults];
+
+  var idToken = defaults.stringForKey(getKeyName('IdToken'));
+  var refreshToken = defaults.stringForKey(getKeyName('RefreshToken'));
+  var domainInfo = defaults.dictionaryForKey(getKeyName('DomainInfo'));
+  var invisionAuthMode = defaults.stringForKey(getKeyName('invisionAuthMode')) || 'v6';
+
+  //this is done mainly for us when moving between environments without logging out and changing authMode it would create stuck cases
+  if (idToken && !refreshToken){
+    idToken = undefined;
+  }
+
+  return { idToken, refreshToken, domainInfo, invisionAuthMode: invisionAuthMode };
+}
+
+function hasValue(value) {
+  return value !== null && value !== undefined && value != "";
+}
+
+function getLoginDataFromCraftDefaults() {
+  var craftManagerDefaults = [[NSUserDefaults alloc] initWithSuiteName:"com.invisionlabs.CraftManager"];
+
+  var idToken = craftManagerDefaults.stringForKey('com.invisionlabs.Sync.accessToken');
+  var refreshToken = craftManagerDefaults.stringForKey('com.invisionlabs.Sync.refreshToken');
+  var companyDomain = craftManagerDefaults.stringForKey('com.invisionlabs.Sync.activeDomain');
+  var pcDomain = craftManagerDefaults.stringForKey('com.invisionlabs.Sync.domain');
+  var invisionAuthMode = craftManagerDefaults.stringForKey('com.invisionlabs.Sync.environmentVersion');
+  if (invisionAuthMode){
+    //make sure here to transform to lower case to save it for all other users
+    invisionAuthMode = invisionAuthMode.toLowerCase();
+  }
+  var isV7 = invisionAuthMode === 'v7';
+
+  // checking hasValue(pcDomain) alone is not good enough anymore since com.invisionlabs.Sync.domain now has value in v7
+  var isPCDomain = !isV7 && hasValue(pcDomain);
+
+  var domainInfo = {
+    domain: companyDomain,
+    pcDomain: pcDomain,
+    isPCDomain: isPCDomain
+  };
+
+  return { idToken, refreshToken, domainInfo, invisionAuthMode };
+}
+
+function getLoginDataFromDefaults() {
+  return loggedInViaCraft && loginViaCraftSupported() && !shouldUseLoginHelper()? getLoginDataFromCraftDefaults() : getLoginDataFromUserDefaults();
+}
+
+function saveLoginDataInDefaults(payload) {
+  var defaults = [NSUserDefaults standardUserDefaults];
+
+  const idToken = payload.idToken; // access token
+  const refreshToken = payload.refreshToken;
+  const domainInfo = payload.domainInfo;
+
+  if (idToken !== undefined) {
+    [defaults setObject:idToken forKey:getKeyName('IdToken')];
+  }
+
+  if (refreshToken !== undefined) {
+    [defaults setObject:refreshToken forKey:getKeyName('RefreshToken')];
+  }
+
+  if (domainInfo !== undefined) {
+    [defaults setObject:domainInfo forKey:getKeyName('DomainInfo')];
+  }
+}

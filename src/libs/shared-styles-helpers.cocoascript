@@ -1,0 +1,137 @@
+//Return all the shared layer styles of the current document
+function getDocumentSharedLayerStyles(document) {
+  return document.documentData().layerStyles().objects();
+};
+
+
+function findSharedStyleById(document, id) {
+  //todo: need to check if this is needed
+  const layerStyles = getDocumentSharedLayerStyles(document);
+  return $.find(layerStyles, function(style) {
+    return style.objectID().isEqualToString(id);
+  });
+}
+
+//get  all the shared layer styles of the current document mapped by sharedObjectId
+function getDocumentSharedStylesById(document) {
+  const results = {};
+
+  //objectid identical to style.sharedObjectID for sharedstyle object
+  $.forEach(getDocumentSharedLayerStyles(document), function(sketchLayerStyle) {
+    results[sketchLayerStyle.objectID()] = sketchLayerStyle;
+  });
+
+  return results;
+}
+
+
+/*
+  This map will help to derive sharedStyle either based on consistent id or the layer mapping from previously stored map
+
+  Returns an object containing both lookup maps
+ */
+function libraryImportedSharedStyles(document, styleData){
+  return {
+    stylesByConsistentId: _libraryImportedSharedStylesByConsistentID(document, styleData),
+    stylesByMapData: _libraryImportedSharedStylesByMapData(document)
+  }
+}
+
+/*
+  Return the currently imported sharedStyle by provided id
+  Currently it can receive either the consitent id or brandai id and the result will be return trying both options
+ */
+//todo: receive an object?
+function getImportedSharedStyle(libraryImportedSharedStyles, id){
+
+  if (libraryImportedSharedStyles.stylesByConsistentId[id]){
+    return libraryImportedSharedStyles.stylesByConsistentId[id];
+  }
+
+  return libraryImportedSharedStyles.stylesByMapData[id];
+}
+
+
+/*
+ Add new sharedStyle object to map of the already imported styles
+ */
+function addNewImportedSharedStyle(libraryImportedSharedStyles, newSharedStyle){
+  libraryImportedSharedStyles.stylesByConsistentId[newSharedStyle.objectID()] = newSharedStyle;
+}
+
+
+/*
+ This map will help to derive brandai id based on sharedObjectId.
+
+ The keys of the map can be based either on consistent id or on the previously stored map data
+ thus encapsulating the mapping for methods who need the data but ingnorant to the source
+ */
+function brandaiIdBySharedStyleIdMap(document, styleData){
+
+  const previouslyImportedBrandaiIDsByStyleID = _getPreviouslyImportedSharedLayerStylesMap(document.documentData());
+  var mergedMap = previouslyImportedBrandaiIDsByStyleID;
+
+  const librarySharedStyles = styleData.globalAssets.sharedStyles; //todo: should consider parents
+  //library content overrides the map content so it assigned second
+  librarySharedStyles.forEach(function(librarySharedStyle){
+    mergedMap[librarySharedStyle.uuid] = librarySharedStyle._id;
+  });
+
+  return mergedMap;
+}
+
+
+function allLibrarySharedStylesByUUID(styleData) {
+  const librarySharedStylesByID = {};
+  styleData.globalAssets.sharedStyles.forEach(function(sharedStyle){
+    librarySharedStylesByID[sharedStyle.uuid] = sharedStyle;
+  });
+
+  return librarySharedStylesByID;
+}
+
+
+function _libraryImportedSharedStylesByConsistentID(document, styleData){
+  const currentlySyncedSharedStyles = {};
+  const librarySharedStylesByUUID = allLibrarySharedStylesByUUID(styleData);
+
+  const documentLayerStyles = getDocumentSharedLayerStyles(document);
+
+  $.forEach(documentLayerStyles, function(sketchLayerStyle) {
+    if (librarySharedStylesByUUID[sketchLayerStyle.objectID()]){
+      currentlySyncedSharedStyles[sketchLayerStyle.objectID()] = sketchLayerStyle;
+    }
+  });
+
+  return currentlySyncedSharedStyles;
+}
+
+// Returns an object that maps each shared style in the document in the
+// following way:
+// Brand.ai Shared Style ID -> Shared Style
+function _libraryImportedSharedStylesByMapData(document) {
+  const results = {};
+
+  const brandAIIDsByTextStyleID =
+    _getPreviouslyImportedSharedLayerStylesMap(document.documentData());
+
+  const sharedLayerStyles = getDocumentSharedLayerStyles(document);
+
+  $.forEach(sharedLayerStyles, function(sketchLayerStyle) {
+    const brandAIID = brandAIIDsByTextStyleID[sketchLayerStyle.objectID()];
+    if (brandAIID) {
+      results[brandAIID] = sketchLayerStyle;
+    }
+  });
+
+  return results;
+}
+
+// Returns a dictionary mapping like this:
+// Sketch Shared Style ID -> Brand.ai ID
+//
+// should not be used outside of this helpers file
+function _getPreviouslyImportedSharedLayerStylesMap(documentData) {
+  return mutableDictionaryForDocumentKey(documentData, 'importedLayerStyles');
+}
+

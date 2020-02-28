@@ -1,0 +1,34 @@
+@import 'debug.js';
+
+// This function is basically a duplicate of a simliar function in
+// brandai.cocoascript. We are not using require() to access that because the
+// functions in this file will be called whenever the user changes their
+// selection on the Sketch canvas. They should respond quickly and as far as I
+// can tell loading our `require` implementation and using it would happen each
+// time these functions are run, rather than once when this file is first
+// loaded.
+function postWebUIEvent(eventName, payload) {
+  var webView = NSThread.mainThread().threadDictionary()['dsmMainWebView'];
+  if (webView) {
+    var data = JSON.stringify({ eventName: eventName, payload: payload });
+    var script = "window.dsm.handleEvent(" + data + ")";
+    webView.windowScriptObject().evaluateWebScript(script);
+  } else {
+    throw 'No WebView present. Event cannot be posted to the web UI.';
+  }
+}
+
+function onSelectionChanged(context) {
+  // Using context.actionContext.newSelection is the documented way to get the
+  // currently selected layers, but that turns out to be buggy. We get better
+  // results asking the document directly.
+  const count = context
+    .actionContext
+    .document
+    .selectedLayers()
+    .containedLayersCount();
+
+  postWebUIEvent('onSelectionDidChange', {
+    selectedLayerCount: count
+  });
+}

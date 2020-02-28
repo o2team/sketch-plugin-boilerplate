@@ -46,6 +46,28 @@ yarn run start
 `sketch-plugin-boilerplate` 使用 `skpm` 工具进行构建，查看详细 `skpm` 工作原理，请参考 [skpm Readme](https://github.com/skpm/skpm/blob/master/README.md)。
 
 
+## Communicating with the webview
+```
+// Communicating with the webview
+const SKetchBridgeHandler = (eventName: string, payload: any, timeout = 3000) => {
+  return new Promise(resolve => {
+    const CALL_BACK = `${eventName}__CALLBACK_${Number(Math.floor(Date.now() * Math.random())).toString(32)}`
+    const tick = setTimeout(() => {
+      delete window[CALL_BACK]
+      resolve(null)
+      clearTimeout(tick)
+    }, timeout)
+    window[CALL_BACK] = data => {
+      clearTimeout(tick)
+      delete window[CALL_BACK]
+      resolve(data)
+    }
+    payload.callbackfn = CALL_BACK
+    window.postSketchMessage(eventName, payload)
+  })
+}
+```
+
 ## Sketch class inheritance diagram
 
 基于 Sketch 48.1， 来源 [Sketch.d.ts 48.1](https://github.com/pravdomil/Sketch.d.ts/blob/master/readme.md)
