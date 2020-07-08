@@ -1,3 +1,5 @@
+import sketch from 'sketch'
+
 export let context
 export let document
 export let version
@@ -119,7 +121,7 @@ export default function (ctx) {
   // eslint-disable-next-line no-new-wrappers
   version = new String(context.plugin.version()).toString()
   // eslint-disable-next-line no-new-wrappers
-  sketchVersion = new String(context.api().version).toString()
+  sketchVersion = new String(sketch.version.sketch).toString()
   pluginFolderPath = getPluginFolderPath(context)
   resourcesPath = `${pluginFolderPath}/Contents/Resources`
 }
