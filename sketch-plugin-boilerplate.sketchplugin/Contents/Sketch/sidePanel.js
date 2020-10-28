@@ -2605,6 +2605,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WINDOW_MOVE_INSTANCE", function() { return WINDOW_MOVE_INSTANCE; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WINDOW_MOVE_SELECTOR", function() { return WINDOW_MOVE_SELECTOR; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Menus", function() { return Menus; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+
 var context;
 var document;
 var version;
@@ -2716,9 +2719,11 @@ function getPluginFolderPath(context) {
   documentObjectID = document.documentData().objectID();
   updateIdentifier(documentObjectID); // eslint-disable-next-line no-new-wrappers
 
-  version = new String(context.plugin.version()).toString(); // eslint-disable-next-line no-new-wrappers
+  version = new String(context.plugin.version()).toString(); //Sketch 66 已移除 context.api()  Javascript API (v1.0)
+  // sketchVersion = new String(context.api().version).toString()
+  // eslint-disable-next-line no-new-wrappers
 
-  sketchVersion = new String(context.api().version).toString();
+  sketchVersion = new String(sketch__WEBPACK_IMPORTED_MODULE_0___default.a.version.sketch).toString();
   pluginFolderPath = getPluginFolderPath(context);
   resourcesPath = "".concat(pluginFolderPath, "/Contents/Resources");
 });

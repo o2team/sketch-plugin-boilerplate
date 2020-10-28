@@ -120,6 +120,8 @@ export default function (ctx) {
   updateIdentifier(documentObjectID)
   // eslint-disable-next-line no-new-wrappers
   version = new String(context.plugin.version()).toString()
+  //Sketch 66 已移除 context.api()  Javascript API (v1.0)
+  // sketchVersion = new String(context.api().version).toString()
   // eslint-disable-next-line no-new-wrappers
   sketchVersion = new String(sketch.version.sketch).toString()
   pluginFolderPath = getPluginFolderPath(context)
