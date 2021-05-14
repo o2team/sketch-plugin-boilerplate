@@ -72,6 +72,8 @@ export const addButton = ({ rect, size, icon, activeIcon, tooltip = '', type = 5
   const imageURL = getImageURL(icon)
   const image = createImage(imageURL, size)
   button.setImage(image)
+  button.setTitle(tooltip)
+  button.setFont(NSFont.fontWithName_size('Arial', 10))
 
   if (activeIcon) {
     const activeImageURL = getImageURL(activeIcon)

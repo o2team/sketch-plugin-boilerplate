@@ -484,6 +484,8 @@ var addButton = function addButton(_ref) {
   var imageURL = getImageURL(icon);
   var image = createImage(imageURL, size);
   button.setImage(image);
+  button.setTitle(tooltip);
+  button.setFont(NSFont.fontWithName_size('Arial', 10));
 
   if (activeIcon) {
     var activeImageURL = getImageURL(activeIcon);

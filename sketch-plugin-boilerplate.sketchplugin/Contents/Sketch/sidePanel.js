@@ -2489,6 +2489,7 @@ var onToggleSidePanel = function onToggleSidePanel(context) {
   toolbar.addView_inGravity(Object(_utils__WEBPACK_IMPORTED_MODULE_2__["createImageView"])(NSMakeRect(0, 0, 40, 22), 'transparent', NSMakeSize(40, 22)), 1);
   var Logo = Object(_utils__WEBPACK_IMPORTED_MODULE_2__["createImageView"])(NSMakeRect(0, 0, 40, 30), 'logo', NSMakeSize(40, 28));
   toolbar.addSubview(Logo);
+  console.error('✅✅ 展示 plugi222222ns');
   _state__WEBPACK_IMPORTED_MODULE_0__["Menus"].map(function (item, index) {
     var _item$rect = item.rect,
         rect = _item$rect === void 0 ? NSMakeRect(0, 0, 40, 40) : _item$rect,
@@ -2830,6 +2831,8 @@ var addButton = function addButton(_ref) {
   var imageURL = getImageURL(icon);
   var image = createImage(imageURL, size);
   button.setImage(image);
+  button.setTitle(tooltip);
+  button.setFont(NSFont.fontWithName_size('Arial', 10));
 
   if (activeIcon) {
     var activeImageURL = getImageURL(activeIcon);
