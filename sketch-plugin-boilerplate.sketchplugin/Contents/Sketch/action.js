@@ -242,7 +242,7 @@ var onCloseDocument = function onCloseDocument() {
 /*!**********************!*\
   !*** ./src/state.js ***!
   \**********************/
-/*! exports provided: context, document, version, sketchVersion, pluginFolderPath, resourcesPath, documentObjectID, IdentifierPrefix, SidePanelIdentifier, WINDOW_MOVE_INSTANCE, WINDOW_MOVE_SELECTOR, Menus, default */
+/*! exports provided: context, document, version, sketchVersion, pluginFolderPath, resourcesPath, documentObjectID, IdentifierPrefix, SidePanelIdentifier, SidePanelViewIdentifier, WINDOW_MOVE_INSTANCE, WINDOW_MOVE_SELECTOR, Menus, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -256,6 +256,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "documentObjectID", function() { return documentObjectID; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "IdentifierPrefix", function() { return IdentifierPrefix; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SidePanelIdentifier", function() { return SidePanelIdentifier; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SidePanelViewIdentifier", function() { return SidePanelViewIdentifier; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WINDOW_MOVE_INSTANCE", function() { return WINDOW_MOVE_INSTANCE; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WINDOW_MOVE_SELECTOR", function() { return WINDOW_MOVE_SELECTOR; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Menus", function() { return Menus; });
@@ -271,6 +272,7 @@ var resourcesPath;
 var documentObjectID;
 var IdentifierPrefix;
 var SidePanelIdentifier;
+var SidePanelViewIdentifier;
 var WINDOW_MOVE_INSTANCE;
 var WINDOW_MOVE_SELECTOR;
 var Menus;
@@ -278,6 +280,7 @@ var Menus;
 function updateIdentifier(objectID) {
   IdentifierPrefix = objectID ? "sketch-plugin-boilerplate-".concat(objectID) : 'sketch-plugin-boilerplate';
   SidePanelIdentifier = "".concat(IdentifierPrefix, "-side-panel");
+  SidePanelViewIdentifier = "".concat(IdentifierPrefix, "-side-panel-view");
   WINDOW_MOVE_INSTANCE = "window-move-instance-".concat(objectID);
   WINDOW_MOVE_SELECTOR = "window-move-selector-".concat(objectID);
   Menus = [{
@@ -483,8 +486,8 @@ var addButton = function addButton(_ref) {
   var button = rect ? NSButton.alloc().initWithFrame(rect) : NSButton.alloc().init();
   var imageURL = getImageURL(icon);
   var image = createImage(imageURL, size);
-  button.setImage(image);
-  button.setTitle(tooltip);
+  button.setImage(image); // button.setTitle(tooltip)
+
   button.setFont(NSFont.fontWithName_size('Arial', 10));
 
   if (activeIcon) {

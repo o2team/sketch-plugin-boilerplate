@@ -1,45 +1,48 @@
-import initState, { context, Menus, IdentifierPrefix, SidePanelIdentifier } from './state'
+import initState, { context, Menus, IdentifierPrefix, SidePanelIdentifier, SidePanelViewIdentifier } from './state'
 import { Browser, BrowserManage } from './webview/index'
-import { createImageView, addButton, createBoxSeparator, observerWindowResizeNotification, removeObserverWindowResizeNotification, setSettingForKey, removeSettingForKey } from './utils'
+import { createImageView, addButton, createBoxSeparator, observerWindowResizeNotification, removeObserverWindowResizeNotification, getSettingForKey, setSettingForKey, removeSettingForKey } from './utils'
 
+let toolbarView
 /**
  * insertSidePanel 插入侧边栏
  * @param {*} toolbar
  * @param {*} identifier
  * @param {*} isInsert  默认插入，已插入删除
  */
-const insertSidePanel = (toolbar, identifier, isInsert = false) => {
-  const contentView = context.document.documentWindow().contentView()
-  const stageView = contentView.subviews().objectAtIndex(0)
+const insertSidePanel = (toolbar, identifier) => {
+  const splitViewController = context.document.splitViewController()
 
-  const views = stageView.subviews()
-  const existId = isInsert || views.find(d => ''.concat(d.identifier()) === identifier)
-
-  const finalViews = []
-  let pushedWebView = false
-
-  for (let i = 0; i < views.count(); i++) {
-    const view = views[i]
-    if (existId) {
-      if (''.concat(view.identifier()) !== identifier) finalViews.push(view)
-    } else {
-      finalViews.push(view)
-      if (!pushedWebView && ''.concat(view.identifier()) === 'view_canvas') {
-        finalViews.push(toolbar)
-        pushedWebView = true
+  if (getSettingForKey(identifier)) {
+    removeSettingForKey(identifier)
+    let startPoint = 0
+    const views = splitViewController.splitViewItems()
+    while (views[startPoint]) {
+      if (views[startPoint].identifier === SidePanelViewIdentifier) {
+        splitViewController.removeSplitViewItem(splitViewController.splitViewItems()[startPoint])
+        break
       }
+      startPoint++
     }
+
+    return
   }
 
-  if (pushedWebView) {
-    setSettingForKey(SidePanelIdentifier, 'true')
-  } else {
-    removeSettingForKey(SidePanelIdentifier)
-  }
+  // Make a view controller
+  const viewController = NSViewController.alloc().init()
+  viewController.view = toolbar
+  viewController.view.frame = 40
 
+  // Make a split view item
+  toolbarView = NSSplitViewItem.splitViewItemWithViewController(
+    viewController
+  )
 
-  stageView.subviews = finalViews
-  stageView.adjustSubviews()
+  toolbarView.identifier = SidePanelViewIdentifier
+
+  // Insert the split view item at the appropriate index
+  splitViewController.insertSplitViewItem_atIndex(toolbarView, 2)
+
+  setSettingForKey(identifier, 'true')
 }
 
 
@@ -50,7 +53,7 @@ export const onToggleSidePanel = context => {
 
   const threadDictionary = NSThread.mainThread().threadDictionary()
   if (threadDictionary[SidePanelIdentifier]) {
-    insertSidePanel(threadDictionary[SidePanelIdentifier], SidePanelIdentifier, true)
+    insertSidePanel(threadDictionary[SidePanelIdentifier], SidePanelIdentifier)
     onShutdown()
     return
   }
@@ -148,7 +151,6 @@ export const onToggleSidePanel = context => {
     if (icon === 'fill') toolbar.addView_inGravity(createBoxSeparator(), inGravityType)
     if (index === Menus.length - 1) toolbar.addView_inGravity(createImageView(NSMakeRect(0, 0, 40, 8), 'transparent'), 3)
   })
-
   insertSidePanel(toolbar, SidePanelIdentifier)
 }
 

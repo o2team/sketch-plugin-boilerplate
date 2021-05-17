@@ -2415,6 +2415,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var toolbarView;
 /**
  * insertSidePanel 插入侧边栏
  * @param {*} toolbar
@@ -2423,39 +2424,35 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 var insertSidePanel = function insertSidePanel(toolbar, identifier) {
-  var isInsert = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  var contentView = _state__WEBPACK_IMPORTED_MODULE_0__["context"].document.documentWindow().contentView();
-  var stageView = contentView.subviews().objectAtIndex(0);
-  var views = stageView.subviews();
-  var existId = isInsert || views.find(function (d) {
-    return ''.concat(d.identifier()) === identifier;
-  });
-  var finalViews = [];
-  var pushedWebView = false;
+  var splitViewController = _state__WEBPACK_IMPORTED_MODULE_0__["context"].document.splitViewController();
 
-  for (var i = 0; i < views.count(); i++) {
-    var view = views[i];
+  if (Object(_utils__WEBPACK_IMPORTED_MODULE_2__["getSettingForKey"])(identifier)) {
+    Object(_utils__WEBPACK_IMPORTED_MODULE_2__["removeSettingForKey"])(identifier);
+    var startPoint = 0;
+    var views = splitViewController.splitViewItems();
 
-    if (existId) {
-      if (''.concat(view.identifier()) !== identifier) finalViews.push(view);
-    } else {
-      finalViews.push(view);
-
-      if (!pushedWebView && ''.concat(view.identifier()) === 'view_canvas') {
-        finalViews.push(toolbar);
-        pushedWebView = true;
+    while (views[startPoint]) {
+      if (views[startPoint].identifier === _state__WEBPACK_IMPORTED_MODULE_0__["SidePanelViewIdentifier"]) {
+        splitViewController.removeSplitViewItem(splitViewController.splitViewItems()[startPoint]);
+        break;
       }
+
+      startPoint++;
     }
-  }
 
-  if (pushedWebView) {
-    Object(_utils__WEBPACK_IMPORTED_MODULE_2__["setSettingForKey"])(_state__WEBPACK_IMPORTED_MODULE_0__["SidePanelIdentifier"], 'true');
-  } else {
-    Object(_utils__WEBPACK_IMPORTED_MODULE_2__["removeSettingForKey"])(_state__WEBPACK_IMPORTED_MODULE_0__["SidePanelIdentifier"]);
-  }
+    return;
+  } // Make a view controller
 
-  stageView.subviews = finalViews;
-  stageView.adjustSubviews();
+
+  var viewController = NSViewController.alloc().init();
+  viewController.view = toolbar;
+  viewController.view.frame = 40; // Make a split view item
+
+  toolbarView = NSSplitViewItem.splitViewItemWithViewController(viewController);
+  toolbarView.identifier = _state__WEBPACK_IMPORTED_MODULE_0__["SidePanelViewIdentifier"]; // Insert the split view item at the appropriate index
+
+  splitViewController.insertSplitViewItem_atIndex(toolbarView, 2);
+  Object(_utils__WEBPACK_IMPORTED_MODULE_2__["setSettingForKey"])(identifier, 'true');
 };
 
 var onToggleSidePanel = function onToggleSidePanel(context) {
@@ -2465,7 +2462,7 @@ var onToggleSidePanel = function onToggleSidePanel(context) {
   var threadDictionary = NSThread.mainThread().threadDictionary();
 
   if (threadDictionary[_state__WEBPACK_IMPORTED_MODULE_0__["SidePanelIdentifier"]]) {
-    insertSidePanel(threadDictionary[_state__WEBPACK_IMPORTED_MODULE_0__["SidePanelIdentifier"]], _state__WEBPACK_IMPORTED_MODULE_0__["SidePanelIdentifier"], true);
+    insertSidePanel(threadDictionary[_state__WEBPACK_IMPORTED_MODULE_0__["SidePanelIdentifier"]], _state__WEBPACK_IMPORTED_MODULE_0__["SidePanelIdentifier"]);
     onShutdown();
     return;
   } // Long-running script
@@ -2489,7 +2486,6 @@ var onToggleSidePanel = function onToggleSidePanel(context) {
   toolbar.addView_inGravity(Object(_utils__WEBPACK_IMPORTED_MODULE_2__["createImageView"])(NSMakeRect(0, 0, 40, 22), 'transparent', NSMakeSize(40, 22)), 1);
   var Logo = Object(_utils__WEBPACK_IMPORTED_MODULE_2__["createImageView"])(NSMakeRect(0, 0, 40, 30), 'logo', NSMakeSize(40, 28));
   toolbar.addSubview(Logo);
-  console.error('✅✅ 展示 plugi222222ns');
   _state__WEBPACK_IMPORTED_MODULE_0__["Menus"].map(function (item, index) {
     var _item$rect = item.rect,
         rect = _item$rect === void 0 ? NSMakeRect(0, 0, 40, 40) : _item$rect,
@@ -2589,7 +2585,7 @@ function onShutdown() {
 /*!**********************!*\
   !*** ./src/state.js ***!
   \**********************/
-/*! exports provided: context, document, version, sketchVersion, pluginFolderPath, resourcesPath, documentObjectID, IdentifierPrefix, SidePanelIdentifier, WINDOW_MOVE_INSTANCE, WINDOW_MOVE_SELECTOR, Menus, default */
+/*! exports provided: context, document, version, sketchVersion, pluginFolderPath, resourcesPath, documentObjectID, IdentifierPrefix, SidePanelIdentifier, SidePanelViewIdentifier, WINDOW_MOVE_INSTANCE, WINDOW_MOVE_SELECTOR, Menus, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2603,6 +2599,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "documentObjectID", function() { return documentObjectID; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "IdentifierPrefix", function() { return IdentifierPrefix; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SidePanelIdentifier", function() { return SidePanelIdentifier; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SidePanelViewIdentifier", function() { return SidePanelViewIdentifier; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WINDOW_MOVE_INSTANCE", function() { return WINDOW_MOVE_INSTANCE; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WINDOW_MOVE_SELECTOR", function() { return WINDOW_MOVE_SELECTOR; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Menus", function() { return Menus; });
@@ -2618,6 +2615,7 @@ var resourcesPath;
 var documentObjectID;
 var IdentifierPrefix;
 var SidePanelIdentifier;
+var SidePanelViewIdentifier;
 var WINDOW_MOVE_INSTANCE;
 var WINDOW_MOVE_SELECTOR;
 var Menus;
@@ -2625,6 +2623,7 @@ var Menus;
 function updateIdentifier(objectID) {
   IdentifierPrefix = objectID ? "sketch-plugin-boilerplate-".concat(objectID) : 'sketch-plugin-boilerplate';
   SidePanelIdentifier = "".concat(IdentifierPrefix, "-side-panel");
+  SidePanelViewIdentifier = "".concat(IdentifierPrefix, "-side-panel-view");
   WINDOW_MOVE_INSTANCE = "window-move-instance-".concat(objectID);
   WINDOW_MOVE_SELECTOR = "window-move-selector-".concat(objectID);
   Menus = [{
@@ -2830,8 +2829,8 @@ var addButton = function addButton(_ref) {
   var button = rect ? NSButton.alloc().initWithFrame(rect) : NSButton.alloc().init();
   var imageURL = getImageURL(icon);
   var image = createImage(imageURL, size);
-  button.setImage(image);
-  button.setTitle(tooltip);
+  button.setImage(image); // button.setTitle(tooltip)
+
   button.setFont(NSFont.fontWithName_size('Arial', 10));
 
   if (activeIcon) {

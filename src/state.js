@@ -9,6 +9,7 @@ export let resourcesPath
 export let documentObjectID
 export let IdentifierPrefix
 export let SidePanelIdentifier
+export let SidePanelViewIdentifier
 export let WINDOW_MOVE_INSTANCE
 export let WINDOW_MOVE_SELECTOR
 export let Menus
@@ -16,6 +17,7 @@ export let Menus
 function updateIdentifier (objectID) {
   IdentifierPrefix = objectID ? `sketch-plugin-boilerplate-${objectID}` : 'sketch-plugin-boilerplate'
   SidePanelIdentifier = `${IdentifierPrefix}-side-panel`
+  SidePanelViewIdentifier = `${IdentifierPrefix}-side-panel-view`
   WINDOW_MOVE_INSTANCE = `window-move-instance-${objectID}`
   WINDOW_MOVE_SELECTOR = `window-move-selector-${objectID}`
   Menus = [
