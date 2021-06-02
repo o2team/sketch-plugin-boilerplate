@@ -112,5 +112,6 @@ export class Browser {
       const y = winRect.origin.y
       this.browserWindow._panel.setFrame_display(NSMakeRect(x, y, width, height), true)
     }
+    this.browserWindow._panel.becomeKeyWindow()
   }
 }
